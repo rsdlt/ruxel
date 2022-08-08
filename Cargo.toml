@@ -1,0 +1,15 @@
+[package]
+name = "ruxel"
+version = "0.1.0"
+authors = [ "Rodrigo Santiago <rsdlt@pm.me>"]
+edition = "2021"
+rust-version = "1.62.1"
+description = "A simple ray tracer and renderer built with Rust"
+repository = "https://github.com/rsdlt/ruxel"
+license="Apache Version 2.0 and MIT License"
+keywords = ["ray", "tracer", "render", "renderer", "3D", "ray tracer"]
+categories=["graphics", "rendering"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
