@@ -1,12 +1,14 @@
 [package]
 name = "ruxel"
-version = "0.1.0"
+version = "0.0.0"
 authors = [ "Rodrigo Santiago <rsdlt@pm.me>"]
 edition = "2021"
 rust-version = "1.62.1"
-description = "A simple ray tracer and renderer built with Rust"
+description = "Simple renderer and ray tracer built with Rust"
 repository = "https://github.com/rsdlt/ruxel"
-license="Apache Version 2.0 and MIT License"
+homepage = "https://github.com/rsdlt/ruxel"
+license="Apache Version 2.0 OR MIT License"
+readme= "README.md"
 keywords = ["ray", "tracer", "render", "renderer", "3D", "ray tracer"]
 categories=["graphics", "rendering"]
 
