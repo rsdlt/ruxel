@@ -9,7 +9,7 @@ repository = "https://github.com/rsdlt/ruxel"
 homepage = "https://github.com/rsdlt/ruxel"
 license="Apache Version 2.0 OR MIT License"
 readme= "README.md"
-keywords = ["ray", "tracer", "render", "renderer", "3D", "ray tracer"]
+keywords = ["ray", "tracer", "render", "renderer", "3D"]
 categories=["graphics", "rendering"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
