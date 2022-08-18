@@ -1,8 +1,8 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
-}
+#![warn(missing_docs, missing_debug_implementations)]
+
+/*!
+# Ruxel
+
+**Ruxel** is a simple ray tracer and renderer written in Rust.
+*/
+pub mod geometry;
