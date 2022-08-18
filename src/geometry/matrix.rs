@@ -1,5 +1,5 @@
-/*!
-  Module to implement the Matrix4
+/**
+  Provides data structures, methods and traits for Matrix4 computations.
 */
 
 #[derive(Debug)]

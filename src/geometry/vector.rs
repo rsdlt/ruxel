@@ -1,85 +1,120 @@
-/*!
-Vector module implements Vector3
+/**
+  Data structures and methods for Vector3 and Point3 computations.
 */
+// Bring overflow operator's traits into scope
+use std::ops::Add;
 
-/*!
-Declaration of Vector3
-uses Clone and Copy traits because all elements are primitives in the stack
-*/
+/// Type representing a geometric 3D Vector with x, y, z components.
 #[derive(Debug, Clone, Copy)]
 pub struct Vector3 {
     /// Component on x axis
     pub x: f64,
     /// Component on y axis
     pub y: f64,
-    /// Componenet on z axis
+    /// Component on z axis
     pub z: f64,
-    /// Private component that prevents user for arbitrarily changing Vector to Point or viceversa
-    _w: f64,
 }
 
-impl Default for Vector3 {
-    fn default() -> Self {
-        Self {
-            x: 0f64,
-            y: 0f64,
-            z: 0f64,
-            _w: 0f64,
-        }
+/// Type representing a geometric 3D Point with x, y, z components.  
+#[derive(Debug, Clone, Copy)]
+pub struct Point3 {
+    /// Component on x axis
+    pub x: f64,
+    /// Component on y axis
+    pub y: f64,
+    /// Component on z axis
+    pub z: f64,
+    /// Component on w axis
+    pub w: f64,
+}
+
+/// A trait allows Vector3 and Point3 types to be efficiently initialized with common shorthand
+pub trait NewDecl<T> {
+    /// Return a Vector3 or Point3 type with user-defined x, y, z components
+    fn new(x: f64, y: f64, z: f64) -> T;
+    /// Return a Vector3 or Point3 type with shorthand [1, 1, 1]
+    fn one() -> T;
+    /// Return a Vector 3 or Point3 type with shorthand [0, 0, 0]
+    fn zero() -> T;
+}
+
+impl NewDecl<Vector3> for Vector3 {
+    fn new(x: f64, y: f64, z: f64) -> Vector3 {
+        Vector3 { x, y, z }
     }
-}
-
-/// Trait defines creation of new vectors and points
-pub trait NewDecl {
-    fn new(x: f64, y: f64, z: f64) -> Self;
-    fn one() -> Self;
-    fn zero() -> Self;
-    fn new_point(x: f64, y: f64, z: f64) -> Self;
-    fn one_point() -> Self;
-    fn zero_point() -> Self;
-}
-
-impl NewDecl for Vector3 {
-    fn new(x: f64, y: f64, z: f64) -> Self {
-        Vector3 { x, y, z, _w: 0f64 }
-    }
-
     fn one() -> Self {
         Vector3 {
-            x: 1f64,
-            y: 1f64,
-            z: 1f64,
-            _w: 0f64,
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
         }
     }
     fn zero() -> Self {
         Vector3 {
-            x: 0f64,
-            y: 0f64,
-            z: 0f64,
-            _w: 0f64,
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        }
+    }
+}
+
+impl NewDecl<Point3> for Point3 {
+    fn new(x: f64, y: f64, z: f64) -> Point3 {
+        Point3 { x, y, z, w: 1f64 }
+    }
+    fn one() -> Self {
+        Point3 {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+            w: 1.0,
         }
     }
 
-    fn new_point(x: f64, y: f64, z: f64) -> Self {
-        Vector3 { x, y, z, _w: 1f64 }
-    }
-
-    fn one_point() -> Self {
-        Vector3 {
-            x: 1f64,
-            y: 1f64,
-            z: 1f64,
-            _w: 1f64,
+    fn zero() -> Self {
+        Point3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
         }
     }
+}
 
-    fn zero_point() -> Self {
+impl Add<Point3> for Vector3 {
+    type Output = Point3;
+
+    fn add(self, other: Point3) -> Point3 {
+        Point3 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+            w: other.w,
+        }
+    }
+}
+
+impl Add<Vector3> for Point3 {
+    type Output = Point3;
+
+    fn add(self, other: Vector3) -> Point3 {
+        Point3 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+            w: other.y,
+        }
+    }
+}
+
+impl Add for Vector3 {
+    type Output = Vector3;
+
+    fn add(self, other: Self) -> Vector3 {
         Vector3 {
-            x: 0f64,
-            y: 0f64,
-            z: 0f64,
-            _w: 1f64,
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
         }
     }
 }
