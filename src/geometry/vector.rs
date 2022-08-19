@@ -10,7 +10,7 @@
   Data structures and methods for Vector3 and Point3 computations.
 */
 // Bring overflow operator's traits into scope
-use std::ops::{Add, Sub};
+use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 
 /// Type representing a geometric 3D Vector with x, y, z components.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -305,4 +305,121 @@ impl Sub<Vector3> for Point3 {
     }
 }
 
-// TODO: include Div and Mul for Vector3 and Point3
+impl Neg for Vector3 {
+    type Output = Vector3;
+
+    fn neg(self) -> Vector3 {
+        Vector3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
+    }
+}
+
+impl Neg for Point3 {
+    type Output = Point3;
+
+    fn neg(self) -> Point3 {
+        Point3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+            w: -self.w,
+        }
+    }
+}
+
+impl Mul<f64> for Vector3 {
+    type Output = Vector3;
+
+    fn mul(self, other: f64) -> Vector3 {
+        Vector3 {
+            x: self.x * other,
+            y: self.y * other,
+            z: self.z * other,
+        }
+    }
+}
+
+impl Mul<f64> for Point3 {
+    type Output = Point3;
+
+    fn mul(self, other: f64) -> Point3 {
+        Point3 {
+            x: self.x * other,
+            y: self.y * other,
+            z: self.z * other,
+            w: self.w * other,
+        }
+    }
+}
+
+impl Div<f64> for Vector3 {
+    // FIX: graceful handling of / 0.0
+    type Output = Vector3;
+
+    fn div(self, other: f64) -> Vector3 {
+        Vector3 {
+            x: self.x / other,
+            y: self.y / other,
+            z: self.z / other,
+        }
+    }
+}
+
+impl Div<f64> for Point3 {
+    // FIX: graceful handling of / 0.0
+    type Output = Point3;
+
+    fn div(self, other: f64) -> Point3 {
+        Point3 {
+            x: self.x / other,
+            y: self.x / other,
+            z: self.z / other,
+            w: self.w / other,
+        }
+    }
+}
+
+impl AddAssign for Vector3 {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
+    }
+}
+
+impl AddAssign for Point3 {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+            w: self.z + other.w,
+        }
+    }
+}
+
+impl SubAssign for Vector3 {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
+impl SubAssign for Point3 {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+            w: self.w - other.w,
+        }
+    }
+}
