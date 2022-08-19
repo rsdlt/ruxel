@@ -304,3 +304,5 @@ impl Sub<Vector3> for Point3 {
         }
     }
 }
+
+// TODO: include Div and Mul for Vector3 and Point3

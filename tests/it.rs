@@ -169,4 +169,6 @@ fn vector_and_point_construction_integrity() {
 }
 
 #[test]
+// This test validates the operation overloading Add, Sub, Div and Mul for the Vector3 and Point3
+// types TODO: write the tests
 fn vector_and_point_operator_overloading_integrity() {}
