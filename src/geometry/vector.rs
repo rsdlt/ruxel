@@ -12,6 +12,9 @@
 // Bring overflow operator's traits into scope
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 
+// Bring geometry module constants into scope
+use super::EPSILON;
+
 /// Type representing a geometric 3D Vector with x, y, z components.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector3 {
@@ -36,12 +39,27 @@ pub struct Point3 {
     pub w: f64,
 }
 
+impl Default for Point3{
+    fn default() -> Self {
+        Self { x:0.0 , y: 0.0, z: 0.0, w: 1.0 }
+
+    }
+}
+
+impl Default for Vector3{
+    fn default() -> Self {
+        Self {  x:0.0 , y: 0.0, z: 0.0}
+    }
+}
+
 /// A trait allows Vector3 and Point3 types to be efficiently initialized with common shorthand
 pub trait NewDecl<T> {
     /// Return a Vector3 or Point3 type with shorthand [0, 0, -1]
     fn back() -> T;
     /// Return a Vector3 or Point3 type with shorthand [0, -1, 0]
     fn down() -> T;
+    /// Return true if a Vector or Point3 is identical to another, else return false
+    fn equal(self, other: Self) -> bool;
     /// Return a Vector3 or Point3 type with shorthand [0, 0, 1]
     fn forward() -> T;
     /// Return a Vector3 or Point3 type with shorthand [-1, 0, 0]
@@ -59,24 +77,6 @@ pub trait NewDecl<T> {
 }
 
 impl NewDecl<Vector3> for Vector3 {
-    fn new(x: f64, y: f64, z: f64) -> Vector3 {
-        Vector3 { x, y, z }
-    }
-    fn one() -> Self {
-        Vector3 {
-            x: 1.0,
-            y: 1.0,
-            z: 1.0,
-        }
-    }
-    fn zero() -> Self {
-        Vector3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        }
-    }
-
     fn back() -> Vector3 {
         Vector3 {
             x: 0.0,
@@ -84,12 +84,20 @@ impl NewDecl<Vector3> for Vector3 {
             z: -1.0,
         }
     }
-
     fn down() -> Vector3 {
         Vector3 {
             x: 0.0,
             y: -1.0,
             z: 0.0,
+        }
+    }
+    fn equal(self, other: Self) -> bool {
+        // println!("self: {:^2.5}, other: {:^2.5}\n (self.x - other.x).abs(): {:^2.5} \n EPSILON: {:^2.5} \n f64::EPSILON: {:^2.5}", self.x, other.x, (self.x - other.x).abs(), EPSILON, f64::EPSILON);
+        if (self.x - other.x).abs() < EPSILON && (self.y - other.y).abs() < EPSILON && (self.z - other.z).abs() < EPSILON
+        {
+            true
+        } else {
+            false
         }
     }
 
@@ -109,6 +117,18 @@ impl NewDecl<Vector3> for Vector3 {
         }
     }
 
+    fn new(x: f64, y: f64, z: f64) -> Vector3 {
+        Vector3 { x, y, z }
+    }
+
+    fn one() -> Self {
+        Vector3 {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+        }
+    }
+
     fn right() -> Vector3 {
         Vector3 {
             x: 1.0,
@@ -124,30 +144,17 @@ impl NewDecl<Vector3> for Vector3 {
             z: 0.0,
         }
     }
-}
-
-impl NewDecl<Point3> for Point3 {
-    fn new(x: f64, y: f64, z: f64) -> Point3 {
-        Point3 { x, y, z, w: 1f64 }
-    }
-    fn one() -> Self {
-        Point3 {
-            x: 1.0,
-            y: 1.0,
-            z: 1.0,
-            w: 1.0,
-        }
-    }
 
     fn zero() -> Self {
-        Point3 {
+        Vector3 {
             x: 0.0,
             y: 0.0,
             z: 0.0,
-            w: 1.0,
         }
     }
+}
 
+impl NewDecl<Point3> for Point3 {
     fn back() -> Point3 {
         Point3 {
             x: 0.0,
@@ -156,7 +163,7 @@ impl NewDecl<Point3> for Point3 {
             w: 1.0,
         }
     }
-
+   
     fn down() -> Point3 {
         Point3 {
             x: 0.0,
@@ -165,7 +172,19 @@ impl NewDecl<Point3> for Point3 {
             w: 1.0,
         }
     }
-
+   
+    fn equal(self, other: Self) -> bool {
+        if (self.x - other.x).abs() < EPSILON
+            && (self.y - other.y).abs() < EPSILON
+            && (self.z - other.z).abs() < EPSILON
+            && (self.w - other.w).abs() < EPSILON
+        {
+            true
+        } else {
+            false
+        }
+    }
+    
     fn forward() -> Point3 {
         Point3 {
             x: 0.0,
@@ -184,6 +203,19 @@ impl NewDecl<Point3> for Point3 {
         }
     }
 
+    fn new(x: f64, y: f64, z: f64) -> Point3 {
+        Point3 { x, y, z, w: 1f64 }
+    }
+
+    fn one() -> Self {
+        Point3 {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+            w: 1.0,
+        }
+    }
+
     fn right() -> Point3 {
         Point3 {
             x: 1.0,
@@ -197,6 +229,15 @@ impl NewDecl<Point3> for Point3 {
         Point3 {
             x: 0.0,
             y: 1.0,
+            z: 0.0,
+            w: 1.0,
+        }
+    }
+
+    fn zero() -> Self {
+        Point3 {
+            x: 0.0,
+            y: 0.0,
             z: 0.0,
             w: 1.0,
         }
@@ -241,19 +282,6 @@ impl Add for Vector3 {
     }
 }
 
-impl Add for Point3 {
-    type Output = Point3;
-
-    fn add(self, other: Self) -> Point3 {
-        Point3 {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-            w: self.w + other.w,
-        }
-    }
-}
-
 impl Sub for Vector3 {
     type Output = Vector3;
 
@@ -267,14 +295,13 @@ impl Sub for Vector3 {
 }
 
 impl Sub for Point3 {
-    type Output = Point3;
+    type Output = Vector3;
 
-    fn sub(self, other: Self) -> Point3 {
-        Point3 {
+    fn sub(self, other: Self) -> Vector3 {
+        Vector3 {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,
-            w: self.w - other.w,
         }
     }
 }

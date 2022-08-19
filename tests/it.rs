@@ -12,7 +12,7 @@ Integration and Unit Testing
 use ruxel::geometry::vector::*;
 
 #[test]
-// This test validates the construction  of the Vector3 and Point3 types
+// This test validates the construction of the Vector3 and Point3 types
 fn vector_and_point_construction_integrity() {
     let v_one = Vector3::one();
     let v_zero = Vector3::zero();
@@ -86,6 +86,7 @@ fn vector_and_point_construction_integrity() {
         },
         v_up
     );
+
     let p_one = Point3::one();
     let p_zero = Point3::zero();
     let p_back = Point3::back();
@@ -94,6 +95,7 @@ fn vector_and_point_construction_integrity() {
     let p_left = Point3::left();
     let p_right = Point3::right();
     let p_up = Point3::up();
+
     assert_eq!(
         Point3 {
             x: 1.0,
@@ -171,4 +173,41 @@ fn vector_and_point_construction_integrity() {
 #[test]
 // This test validates the operation overloading Add, Sub, Div and Mul for the Vector3 and Point3
 // types TODO: write the tests
-fn vector_and_point_operator_overloading_integrity() {}
+fn vector_and_point_operator_overloading_integrity() {
+    let v1 = Vector3::new(2.0, 3.5, 4.0);
+    let v2 = Vector3::new(3.0, 7.5, 8.0);
+    let v3 = Vector3::new(2.55555, 7.88888, 9.34343);
+    let v4 = Vector3::new(2.55553, 7.88887, 9.34342);
+    assert_eq!(
+        v1 + v2,
+        Vector3 {
+            x: 5.0,
+            y: 11.0,
+            z: 12.0
+        }
+    );
+    assert_eq!(
+        v1 - v2,
+        Vector3 {
+            x: -1.0,
+            y: -4.0,
+            z: -4.0
+        }
+    );
+    assert_eq!(
+        v1 * 3.0,
+        Vector3 {
+            x: 6.0,
+            y: 10.5,
+            z: 12.0
+        }
+    );
+    assert!(v1.equal(v1 * 2.0 / 2.0));
+    assert!(v3.equal(v4));
+
+    let p1 = Point3::new(2.5, 3.5, 4.5);
+    let p2 = Point3::new(3.0, 7.0, 8.0);
+    let p3 = Point3::new(2.55555, 7.88888, 9.34343);
+    let p4 = Point3::new(2.55553, 7.88887, 9.34342);
+    assert_eq!(p1 - p2, Vector3::new( -0.5, - 3.5, -3.5 ));
+}
