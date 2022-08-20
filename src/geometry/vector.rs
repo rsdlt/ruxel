@@ -12,6 +12,7 @@
 // Bring overflow operator's traits into scope
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 
+
 // Bring geometry module constants into scope
 use super::EPSILON;
 
@@ -39,21 +40,29 @@ pub struct Point3 {
     pub w: f64,
 }
 
-impl Default for Point3{
+impl Default for Point3 {
     fn default() -> Self {
-        Self { x:0.0 , y: 0.0, z: 0.0, w: 1.0 }
-
+        Self {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+        }
     }
 }
 
-impl Default for Vector3{
+impl Default for Vector3 {
     fn default() -> Self {
-        Self {  x:0.0 , y: 0.0, z: 0.0}
+        Self {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        }
     }
 }
 
 /// A trait allows Vector3 and Point3 types to be efficiently initialized with common shorthand
-pub trait NewDecl<T> {
+pub trait NewInit<T> {
     /// Return a Vector3 or Point3 type with shorthand [0, 0, -1]
     fn back() -> T;
     /// Return a Vector3 or Point3 type with shorthand [0, -1, 0]
@@ -76,7 +85,7 @@ pub trait NewDecl<T> {
     fn zero() -> T;
 }
 
-impl NewDecl<Vector3> for Vector3 {
+impl NewInit<Vector3> for Vector3 {
     fn back() -> Vector3 {
         Vector3 {
             x: 0.0,
@@ -93,7 +102,9 @@ impl NewDecl<Vector3> for Vector3 {
     }
     fn equal(self, other: Self) -> bool {
         // println!("self: {:^2.5}, other: {:^2.5}\n (self.x - other.x).abs(): {:^2.5} \n EPSILON: {:^2.5} \n f64::EPSILON: {:^2.5}", self.x, other.x, (self.x - other.x).abs(), EPSILON, f64::EPSILON);
-        if (self.x - other.x).abs() < EPSILON && (self.y - other.y).abs() < EPSILON && (self.z - other.z).abs() < EPSILON
+        if (self.x - other.x).abs() < EPSILON
+            && (self.y - other.y).abs() < EPSILON
+            && (self.z - other.z).abs() < EPSILON
         {
             true
         } else {
@@ -154,7 +165,7 @@ impl NewDecl<Vector3> for Vector3 {
     }
 }
 
-impl NewDecl<Point3> for Point3 {
+impl NewInit<Point3> for Point3 {
     fn back() -> Point3 {
         Point3 {
             x: 0.0,
@@ -163,7 +174,7 @@ impl NewDecl<Point3> for Point3 {
             w: 1.0,
         }
     }
-   
+
     fn down() -> Point3 {
         Point3 {
             x: 0.0,
@@ -172,7 +183,7 @@ impl NewDecl<Point3> for Point3 {
             w: 1.0,
         }
     }
-   
+
     fn equal(self, other: Self) -> bool {
         if (self.x - other.x).abs() < EPSILON
             && (self.y - other.y).abs() < EPSILON
@@ -184,7 +195,7 @@ impl NewDecl<Point3> for Point3 {
             false
         }
     }
-    
+
     fn forward() -> Point3 {
         Point3 {
             x: 0.0,
@@ -382,29 +393,39 @@ impl Mul<f64> for Point3 {
     }
 }
 
-impl Div<f64> for Vector3 {
-    // FIX: graceful handling of / 0.0
-    type Output = Vector3;
 
-    fn div(self, other: f64) -> Vector3 {
-        Vector3 {
-            x: self.x / other,
-            y: self.y / other,
-            z: self.z / other,
+impl Div<f64> for Vector3 {
+    type Output = Result<Vector3, f64>;
+        // If divided by 0 returns propagates INFINITY in the error
+    fn div(self, other: f64) -> Result<Vector3, f64> {
+        if other < EPSILON {
+            Err(f64::INFINITY)
+        } else {
+            Ok(
+            Vector3 {
+                x: self.x / other,
+                y: self.y / other,
+                z: self.z / other,
+            })
         }
     }
 }
 
-impl Div<f64> for Point3 {
-    // FIX: graceful handling of / 0.0
-    type Output = Point3;
 
-    fn div(self, other: f64) -> Point3 {
-        Point3 {
-            x: self.x / other,
-            y: self.x / other,
-            z: self.z / other,
-            w: self.w / other,
+impl Div<f64> for Point3 {
+    type Output = Result<Point3, f64>;
+        // If divided by 0 returns propagates INFINITY in the error
+        fn div(self, other: f64) -> Result<Point3, f64> {
+        if other < EPSILON {
+            Err(f64::INFINITY)
+        } else {
+            Ok(
+            Point3 {
+                x: self.x / other,
+                y: self.x / other,
+                z: self.z / other,
+                w: self.w / other,
+            })
         }
     }
 }
