@@ -210,4 +210,7 @@ fn vector_and_point_operator_overloading_integrity() {
     let _p3 = Point3::new(2.55555, 7.88888, 9.34343);
     let _p4 = Point3::new(2.55553, 7.88887, 9.34342);
     assert_eq!(p1 - p2, Vector3::new(-0.5, -3.5, -3.5));
+
+    // TODO: need to test the Neg operator overloading 
+
 }

@@ -13,6 +13,8 @@
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 
 
+// TODO: Magnitude, Normalization, Dot Product, Cross Product
+
 // Bring geometry module constants into scope
 use super::EPSILON;
 
