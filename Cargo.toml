@@ -24,5 +24,3 @@ categories=["graphics", "rendering"]
 
 [dependencies]
 
-[lib]
-doctest = false # no testing on docs yet
