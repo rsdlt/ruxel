@@ -182,7 +182,6 @@ fn vector_and_point_operator_overloading_integrity() {
     let p2 = Point3::new(3.0, 7.0, 8.0);
     let p3 = Point3::new(2.55555, 7.88888, 9.34343);
     let p4 = Point3::new(2.55553, 7.88887, 9.34342);
-
     // Add two Vector3
     assert_eq!(
         v1 + v2,
@@ -210,7 +209,6 @@ fn vector_and_point_operator_overloading_integrity() {
             z: 12.0
         }
     );
-
     // Validate Equality 
     assert!(v3.equal(v4));
     // Div Vector3 by scalar 
@@ -230,22 +228,18 @@ fn vector_and_point_operator_overloading_integrity() {
     vx += v1;
     vx -= v1;
     assert!(vx.equal(Vector3::zero()) );
-   
     // Test chain operators
     println!("{:?}", v1 + v4 - v1 - v3 + (v2 - v4) / 1.522445523);
     println!("{:?}", v3 + p4 + v1);
     println!("{:?}", p1 - p2 / 3.7626374);
     println!("{:?}", p2 - v1);
     println!("{:?}", v2 + v1);
-
-
-
-    
 }
 
 #[test]
-fn pruebita(){
-    println!("test pruebita");
+// This test validates the implementation of the fuctions in the VecOps trait
+fn vector_common_operations_integrity(){
+    println!("test");
     let a = Vector3::one();
     println!("{:?}", a);
 

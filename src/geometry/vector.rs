@@ -16,8 +16,6 @@ use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 #[cfg(test)]
 mod tests;
 
-// TODO: Magnitude, Normalization, Dot Product, Cross Product
-
 // Bring geometry module constants into scope
 use super::EPSILON;
 
@@ -66,31 +64,52 @@ impl Default for Vector3 {
     }
 }
 
-/// A trait allows Vector3 and Point3 types to be efficiently initialized with common shorthand
-pub trait NewInit<T> {
-    /// Return a Vector3 or Point3 type with shorthand [0, 0, -1]
+/// A trait allows Types with x, y, z coordinates to be efficiently initialized with common shorthand.
+pub trait CoordInit<T> {
+    /// Return a type with shorthand [0, 0, -1].
     fn back() -> T;
-    /// Return a Vector3 or Point3 type with shorthand [0, -1, 0]
+    /// Return a type with shorthand [0, -1, 0].
     fn down() -> T;
-    /// Return true if a Vector or Point3 is identical to another, else return false
-    fn equal(self, other: Self) -> bool;
-    /// Return a Vector3 or Point3 type with shorthand [0, 0, 1]
+    /// Return true if a type is identical to another, else return false.
+    fn equal(self, rhs: Self) -> bool;
+    /// Return a type with shorthand [0, 0, 1].
     fn forward() -> T;
-    /// Return a Vector3 or Point3 type with shorthand [-1, 0, 0]
+    /// Return a type with shorthand [-1, 0, 0].
     fn left() -> T;
-    /// Return a Vector3 or Point3 type with user-defined x, y, z components
+    /// Return a type with user-defined x, y, z components.
     fn new(x: f64, y: f64, z: f64) -> T;
-    /// Return a Vector3 or Point3 type with shorthand [1, 1, 1]
+    /// Return a type with shorthand [1, 1, 1].
     fn one() -> T;
-    /// Return a Vector3 or Point3 type with shorthand [1, 0, 0]
+    /// Return a type with shorthand [1, 0, 0].
     fn right() -> T;
-    /// Return a Vector3 or Point3 type with shorthand [0, 1, 0]
+    /// Return a type with shorthand [0, 1, 0].
     fn up() -> T;
-    /// Return a Vector3 or Point3 type with shorthand [0, 0, 0]
+    /// Return a type with shorthand [0, 0, 0].
     fn zero() -> T;
 }
 
-impl NewInit<Vector3> for Vector3 {
+// TODO: Implement...
+/// A trait that encapsulates common Vector Operations.
+pub trait VecOps<T> {
+    /// Computes the magnitude of a Vector.
+    fn magnitude(self) -> f64;
+    /// Returns the vector normalized (with magnitude of 1.0)
+    fn normalized(&mut self) -> f64;
+    /// Returns the Dot Product of two Vectors.
+    fn dot(lhs: T, rhs: T) -> T;
+    /// Returns the Cross Product of two Vectors.
+    fn cross(lhs: T, rhs: T) -> T;
+    /// Returns the Smallest component in the Vector.
+    fn min_component(self) -> f64;
+    /// Returns the Largest component in the Vector.
+    fn max_component(self) -> f64;
+    /// Returns the index of the Smallest component in the Vector.
+    /// Returns the index of Largest component in the Vector.
+    fn max_dimension(self) -> char;
+
+}
+
+impl CoordInit<Vector3> for Vector3 {
     fn back() -> Vector3 {
         Vector3 {
             x: 0.0,
@@ -167,7 +186,7 @@ impl NewInit<Vector3> for Vector3 {
     }
 }
 
-impl NewInit<Point3> for Point3 {
+impl CoordInit<Point3> for Point3 {
     fn back() -> Point3 {
         Point3 {
             x: 0.0,
@@ -260,12 +279,12 @@ impl NewInit<Point3> for Point3 {
 impl Add<Point3> for Vector3 {
     type Output = Point3;
 
-    fn add(self, other: Point3) -> Point3 {
+    fn add(self, rhs: Point3) -> Point3 {
         Point3 {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-            w: other.w,
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+            w: rhs.w,
         }
     }
 }
@@ -273,11 +292,11 @@ impl Add<Point3> for Vector3 {
 impl Add<Vector3> for Point3 {
     type Output = Point3;
 
-    fn add(self, other: Vector3) -> Point3 {
+    fn add(self, rhs: Vector3) -> Point3 {
         Point3 {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
             w: self.w,
         }
     }
@@ -286,11 +305,11 @@ impl Add<Vector3> for Point3 {
 impl Add for Vector3 {
     type Output = Vector3;
 
-    fn add(self, other: Self) -> Vector3 {
+    fn add(self, rhs: Self) -> Vector3 {
         Vector3 {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
         }
     }
 }
@@ -298,11 +317,11 @@ impl Add for Vector3 {
 impl Sub for Vector3 {
     type Output = Vector3;
 
-    fn sub(self, other: Self) -> Vector3 {
+    fn sub(self, rhs: Self) -> Vector3 {
         Vector3 {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
         }
     }
 }
@@ -310,11 +329,11 @@ impl Sub for Vector3 {
 impl Sub for Point3 {
     type Output = Vector3;
 
-    fn sub(self, other: Self) -> Vector3 {
+    fn sub(self, rhs: Self) -> Vector3 {
         Vector3 {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
         }
     }
 }
@@ -322,11 +341,11 @@ impl Sub for Point3 {
 impl Sub<Vector3> for Point3 {
     type Output = Point3;
 
-    fn sub(self, other: Vector3) -> Point3 {
+    fn sub(self, rhs: Vector3) -> Point3 {
         Point3 {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
             w: self.w,
         }
     }
@@ -360,11 +379,11 @@ impl Neg for Point3 {
 impl Mul<f64> for Vector3 {
     type Output = Vector3;
 
-    fn mul(self, other: f64) -> Vector3 {
+    fn mul(self, rhs: f64) -> Vector3 {
         Vector3 {
-            x: self.x * other,
-            y: self.y * other,
-            z: self.z * other,
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
         }
     }
 }
@@ -372,11 +391,11 @@ impl Mul<f64> for Vector3 {
 impl Mul<f64> for Point3 {
     type Output = Point3;
 
-    fn mul(self, other: f64) -> Point3 {
+    fn mul(self, rhs: f64) -> Point3 {
         Point3 {
-            x: self.x * other,
-            y: self.y * other,
-            z: self.z * other,
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
             w: self.w,
         }
     }
@@ -384,22 +403,22 @@ impl Mul<f64> for Point3 {
 
 impl Div<f64> for Vector3 {
     type Output = Vector3;
-    fn div(self, other: f64) -> Vector3 {
+    fn div(self, rhs: f64) -> Vector3 {
             Vector3 {
-                x: self.x / other,
-                y: self.y / other,
-                z: self.z / other,
+                x: self.x / rhs,
+                y: self.y / rhs,
+                z: self.z / rhs,
             }
         }
     }
 
 impl Div<f64> for Point3 {
     type Output = Point3;
-        fn div(self, other: f64) -> Point3 {
+        fn div(self, rhs: f64) -> Point3 {
             Point3 {
-                x: self.x / other,
-                y: self.y / other,
-                z: self.z / other,
+                x: self.x / rhs,
+                y: self.y / rhs,
+                z: self.z / rhs,
                 w: self.w,
             }
         }
