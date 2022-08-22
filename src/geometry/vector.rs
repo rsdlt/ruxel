@@ -19,6 +19,7 @@ mod tests;
 // Bring geometry module constants into scope
 use super::EPSILON;
 
+
 /// Type representing a geometric 3D Vector with x, y, z components.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector3 {
@@ -95,20 +96,88 @@ pub trait CoordInit<T> {
 /// A trait that encapsulates common Vector Operations.
 pub trait VecOps<T> {
     /// Computes the magnitude of a Vector.
-    fn magnitude(self) -> f64;
+    fn magnitude(&self) -> f64;
     /// Returns the vector normalized (with magnitude of 1.0)
-    fn normalized(&mut self) -> f64;
+    fn normalized(&mut self);
     /// Returns the Dot Product of two Vectors.
-    fn dot(lhs: T, rhs: T) -> T;
+    fn dot(lhs: T, rhs: T) -> f64;
     /// Returns the Cross Product of two Vectors.
     fn cross(lhs: T, rhs: T) -> T;
     /// Returns the Smallest component in the Vector.
-    fn min_component(self) -> f64;
+    fn min_component(&self) -> (i8, char, f64);
     /// Returns the Largest component in the Vector.
-    fn max_component(self) -> f64;
-    /// Returns the index of the Smallest component in the Vector.
-    /// Returns the index of Largest component in the Vector.
-    fn max_dimension(self) -> char;
+    fn max_component(&self) -> (i8, char, f64);
+    /// Returns the component of the Vector by index. this(1) 
+    fn this(&self, index: i8) ->Option<(i8, char, f64)>;
+    /// Returns the component of the Vector by name. this_n('x')
+    fn this_name(&self, index: char)->Option<(i8, char, f64)>;
+}
+
+impl VecOps<Vector3> for Vector3 {
+    fn magnitude(&self) -> f64 {
+       (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0)).sqrt() 
+    }
+
+    fn normalized(&mut self) {
+        let magnitude = self.magnitude();
+        self.x /= magnitude;
+        self.y /= magnitude;
+        self.z /= magnitude;
+        
+    }
+
+    fn dot(lhs: Vector3, rhs: Vector3) -> f64 {
+        lhs.x * rhs.x + lhs.y + rhs.y + lhs.z * rhs.z
+    }
+
+    fn cross(lhs: Vector3, rhs: Vector3) -> Vector3 {
+        Vector3 {
+            x: lhs.y * rhs.z - lhs.z * rhs.y,
+            y: lhs.z * rhs.x - lhs.x * rhs.z,
+            z: lhs.x * rhs.y - lhs.y * rhs.x,
+        }
+    }
+
+    fn min_component(&self) -> (i8, char, f64) {
+        if self.x <= self.y && self.x <= self.z {
+           (0, 'x', self.x) 
+        }
+        else if self.y <= self.z {
+           (1, 'y', self.y) 
+        } else {
+           (2, 'z', self.z) 
+        }
+
+    }
+
+    fn max_component(&self) -> (i8, char, f64) {
+        if self.x >= self.y && self.x >= self.z {
+           (0, 'x', self.x) 
+        }
+        else if self.y >= self.z {
+           (1, 'y', self.y) 
+        } else {
+           (2, 'z', self.z) 
+        }
+    }
+
+    fn this(&self, index: i8) -> Option<(i8, char, f64)> {
+        match index {
+            0 => Some((0, 'x', self.x)),
+            1 => Some((1, 'y', self.y)),
+            2 => Some((2, 'z', self.z)),
+            _ => None,
+        }
+    }
+
+    fn this_name(&self, index: char)->Option<(i8, char, f64)> {
+        match index {
+            'x' =>Some((0, 'x', self.x)),
+            'y' =>Some((1, 'y', self.y)),
+            'z' =>Some((2, 'z', self.z)),
+            _ => None, 
+        }
+    }
 
 }
 
