@@ -24,8 +24,13 @@ use geometry::vector::{CoordInit, Point3, Vector3};
 /// The geometry module implements the functionality for Points, Vectors, Matrices, and their transformations
 pub mod geometry;
 
+/// The picture module implements the functionality for Canvas and Colors in order to create and
+/// image file.
+pub mod picture;
+
 fn main() {
     let v = Vector3::one();
     let p = Point3::one();
     println!("vector: {:?} \n point: {:?}", v, p);
 }
+

@@ -9,6 +9,7 @@
 /**
   Data structures and methods for Vector3 and Point3 computations.
 */
+
 // Bring overflow operator's traits into scope
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
 
@@ -120,8 +121,9 @@ impl VecOps<Vector3> for Vector3 {
         let magnitude = self.magnitude();
         Self {
             x: self.x / magnitude,
-        y: self.y / magnitude,
-        z: self.z / magnitude, }
+            y: self.y / magnitude,
+            z: self.z / magnitude,
+        }
     }
 
     fn dot(lhs: Vector3, rhs: Vector3) -> f64 {

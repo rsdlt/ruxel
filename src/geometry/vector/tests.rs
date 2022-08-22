@@ -297,5 +297,4 @@ fn simulate_rocket_lauch(){
         println!("Projectile position - x: {:^5.2}, y: {:^5.2}, z: {:^5.2}", proj.position.x, proj.position.y, proj.position.z);
     }
     println!("========================== End");
-
 }
