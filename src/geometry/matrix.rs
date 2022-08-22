@@ -6,9 +6,10 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-/**
-  Provides data structures, methods and traits for Matrix4 computations.
-*/
+/// Provides Unit tests for Matrix3 types.
+
+#[cfg(test)]
+mod tests;
 
 #[derive(Debug)]
 /// Definition of Matrix4
@@ -31,4 +32,5 @@ impl Matrix4 {
     pub fn set_md(&mut self, m: [[f64; 4]; 4]) {
         self.md = m;
     }
+
 }

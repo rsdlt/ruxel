@@ -19,13 +19,16 @@ Ruxel allows rendering and ray tracing of:
 
 */
 
-use geometry::vector::{Vector3, NewInit};
+use geometry::vector::{Vector3, NewInit, Point3};
 
 /// The geometry module implements the functionality for Points, Vectors, Matrices, and their transformations
 pub mod geometry;
 
+
 fn main(){
-    let v = Vector3::new(12.5, 12.50, 42.21);
-    println!("{:?}", v * 2.0);
+    let v = Vector3::one();
+    let p = Point3::one();
+    println!("vector: {:?} \n point: {:?}", v, p);
 
 }
+
