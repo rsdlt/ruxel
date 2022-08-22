@@ -32,5 +32,4 @@ impl Matrix4 {
     pub fn set_md(&mut self, m: [[f64; 4]; 4]) {
         self.md = m;
     }
-
 }

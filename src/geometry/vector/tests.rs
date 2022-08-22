@@ -6,9 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-
 /// Unit testing for Vector3 and Point3 types
-
 use super::*;
 
 #[test]
@@ -86,7 +84,6 @@ fn vector_and_point_construction_integrity() {
         },
         v_up
     );
-
     let p_one = Point3::one();
     let p_zero = Point3::zero();
     let p_back = Point3::back();
@@ -95,7 +92,6 @@ fn vector_and_point_construction_integrity() {
     let p_left = Point3::left();
     let p_right = Point3::right();
     let p_up = Point3::up();
-
     assert_eq!(
         Point3 {
             x: 1.0,
@@ -177,7 +173,6 @@ fn vector_and_point_operator_overloading_integrity() {
     let v2 = Vector3::new(3.0, 7.5, 8.0);
     let v3 = Vector3::new(2.55555, 7.88888, 9.34343);
     let v4 = Vector3::new(2.55553, 7.88887, 9.34342);
-    
     let p1 = Point3::new(2.5, 3.5, 4.5);
     let p2 = Point3::new(3.0, 7.0, 8.0);
     let p3 = Point3::new(2.55555, 7.88888, 9.34343);
@@ -209,16 +204,16 @@ fn vector_and_point_operator_overloading_integrity() {
             z: 12.0
         }
     );
-    // Validate Equality 
+    // Validate Equality
     assert!(v3.equal(v4));
-    // Div Vector3 by scalar 
-    assert!(Vector3::new(1.50, 3.75, 4.0).equal( v2 / 2.0 ));
-    // Neg Vector3 
-    assert_eq!(-v1, Vector3::new(-2.0, -3.5, -4.0)); 
+    // Div Vector3 by scalar
+    assert!(Vector3::new(1.50, 3.75, 4.0).equal(v2 / 2.0));
+    // Neg Vector3
+    assert_eq!(-v1, Vector3::new(-2.0, -3.5, -4.0));
     // Sub two Point3
     assert_eq!(p1 - p2, Vector3::new(-0.5, -3.5, -3.5));
     // Div Point3 by scalar
-    assert!(Point3::new(1.25, 1.75, 2.25).equal( p1 / 2.0 ));
+    assert!(Point3::new(1.25, 1.75, 2.25).equal(p1 / 2.0));
     // Mul Point3 by scalar
     assert!(p3.equal(Point3::new(2.55553, 7.88887, 9.34342)));
     // Neg Point3
@@ -227,7 +222,7 @@ fn vector_and_point_operator_overloading_integrity() {
     let mut vx = Vector3::zero();
     vx += v1;
     vx -= v1;
-    assert!(vx.equal(Vector3::zero()) );
+    assert!(vx.equal(Vector3::zero()));
     // Test chain operators
     println!("{:?}", v1 + v4 - v1 - v3 + (v2 - v4) / 1.522445523);
     println!("{:?}", v3 + p4 + v1);
@@ -238,9 +233,26 @@ fn vector_and_point_operator_overloading_integrity() {
 
 #[test]
 // This test validates the implementation of the fuctions in the VecOps trait
-fn vector_common_operations_integrity(){
-    println!("test");
-    let a = Vector3::one();
-    println!("{:?}", a);
-
+fn vector_common_operations_integrity() {
+    // Magnitude
+    let v1 = Vector3::new(1.0, 2.0, 3.0);
+    assert_eq!(v1.magnitude(), 14f64.sqrt());
+    // Normalization
+    let mut v2 = v1;
+    assert_eq!(v2.normalized().magnitude(), 1f64);
+    // Dot product
+    let a = Vector3::new(1.0, 2.0, 3.0);
+    let b = Vector3::new(2.0, 3.0, 4.0);
+    assert_eq!(Vector3::dot(a, b), 20f64);
+    // Cross product 
+    assert_eq!(Vector3::cross(a, b), Vector3::new(-1.0, 2.0, -1.0));
+    assert_eq!(Vector3::cross(b, a), Vector3::new(1.0, -2.0, 1.0));
+    // Min, Max and Get Components
+    assert_eq!(a.min_component(), (0, 'x', 1.0));
+    assert_eq!(a.max_component(), (2, 'z', 3.0));
+    assert_eq!(a.this(0).unwrap(), (0, 'x', 1.0));
+    assert_eq!(a.this(9), None);
+    assert_eq!(b.this(b.min_component().0).unwrap(), (0, 'x', 2.0));
+    assert_eq!(a.this_name('z').unwrap(), (2, 'z', 3.0));
+    
 }

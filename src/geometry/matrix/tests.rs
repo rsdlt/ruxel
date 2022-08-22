@@ -7,8 +7,7 @@
 // except according to those terms.
 
 /// Unit tests for Matrix4 types.
-
 use super::*;
 
 #[test]
-fn first_matrix_test(){}
+fn first_matrix_test() {}
