@@ -256,3 +256,46 @@ fn vector_common_operations_integrity() {
     assert_eq!(a.this_name('z').unwrap(), (2, 'z', 3.0));
     
 }
+
+#[test]
+// This test validates integrity by simulating a rocket launch
+fn simulate_rocket_lauch(){
+
+    #[derive(Debug)]
+    struct Projectile{
+        position: Point3,
+        velocity: Vector3,
+    }
+
+    struct Environment{
+        gravity: Vector3,
+        wind: Vector3,
+    }
+
+    let mut proj = Projectile{
+        position: Point3::up(),
+        velocity: Vector3::new(1.0, 1.0, 0.0).normalized() 
+    };
+
+    let env = Environment{
+        gravity: Vector3::down()/10f64,
+        wind: Vector3::left()/100f64,
+    };
+    
+    fn tick<'a, 'b>(env: &'a Environment, proj: &'b mut Projectile) -> &'b mut Projectile {
+        proj.position = proj.position + proj.velocity;
+        proj.velocity = proj.velocity + env.gravity + env.wind; 
+        proj
+    }
+
+    println!("Launch position: - x: {:^5.2}, y: {:^5.2}, z: {:^5.2}", proj.position.x, proj.position.y, proj.position.z);
+    while proj.position.y > 0.0 {
+        tick(&env, &mut proj);
+        if proj.position.y <= 0.0 {
+            break;
+        }
+        println!("Projectile position - x: {:^5.2}, y: {:^5.2}, z: {:^5.2}", proj.position.x, proj.position.y, proj.position.z);
+    }
+    println!("========================== End");
+
+}
