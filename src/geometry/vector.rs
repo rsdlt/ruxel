@@ -64,6 +64,9 @@ impl Default for Vector3 {
     }
 }
 
+// TODO: Impl Eq, PartialEq, Ord, PartialOrd, Display, Debug for Types 
+
+
 /// A trait allows Types with x, y, z coordinates to be efficiently initialized with common shorthand.
 pub trait CoordInit<T> {
     /// Return a type with shorthand [0, 0, -1].
