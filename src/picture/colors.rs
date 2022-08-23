@@ -180,8 +180,7 @@ impl MulAssign for ColorRgb {
     }
 }
 
-impl Mul<usize> for ColorRgb{
-    
+impl Mul<usize> for ColorRgb {
     type Output = ColorRgb;
 
     fn mul(self, rhs: usize) -> ColorRgb {
