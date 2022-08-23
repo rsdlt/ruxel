@@ -21,6 +21,8 @@ Ruxel allows rendering and ray tracing of:
 
 use geometry::vector::{CoordInit, Point3, Vector3};
 
+use picture::colors::{ColorInit, ColorRgb};
+
 /// The geometry module implements the functionality for Points, Vectors, Matrices, and their transformations
 pub mod geometry;
 
@@ -32,5 +34,7 @@ fn main() {
     let v = Vector3::one();
     let p = Point3::one();
     println!("vector: {:?} \n point: {:?}", v, p);
-}
 
+    let c = ColorRgb::red();
+    println!("{}", c);
+}

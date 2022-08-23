@@ -7,7 +7,7 @@
 // except according to those terms.
 
 /**
-The Picture module implements the functionality for Canvas, Image format and Colors 
+The Picture module implements the functionality for Canvas, Colors and Pixel types
 */
 
 /// Provides the data structure and implementation of the Color type

@@ -9,9 +9,12 @@
 /**
   Data structures and methods for Vector3 and Point3 computations.
 */
-
 // Bring overflow operator's traits into scope
-use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
+use std::{
+    cmp::{Eq, PartialEq},
+    fmt::Display,
+    ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign},
+};
 
 // Unit tests for Vector3 and Point3
 #[cfg(test)]
@@ -21,7 +24,7 @@ mod tests;
 use super::EPSILON;
 
 /// Type representing a geometric 3D Vector with x, y, z components.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vector3 {
     /// Component on x axis
     pub x: f64,
@@ -32,7 +35,7 @@ pub struct Vector3 {
 }
 
 /// Type representing a geometric 3D Point with x, y, z components.  
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct Point3 {
     /// Component on x axis
     pub x: f64,
@@ -42,6 +45,47 @@ pub struct Point3 {
     pub z: f64,
     /// Component on w axis
     pub w: f64,
+}
+
+impl PartialEq for Vector3 {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y && self.z == other.z
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl Eq for Vector3 {}
+
+impl PartialEq for Point3 {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y && self.z == other.z && self.w == other.w
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+impl Eq for Point3 {}
+
+impl Display for Vector3 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = format!("v: [{:^5.2},{:^5.2},{:^5.2}]", self.x, self.y, self.z);
+        f.write_str(&s)
+    }
+}
+
+impl Display for Point3 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = format!(
+            "p: [{:^5.2},{:^5.2},{:^5.2},{:^5.2}]",
+            self.x, self.y, self.z, self.w
+        );
+        f.write_str(&s)
+    }
 }
 
 impl Default for Point3 {
@@ -65,7 +109,7 @@ impl Default for Vector3 {
     }
 }
 
-// TODO: Impl Eq, PartialEq, Ord, PartialOrd, Display, Debug for Types
+// TODO:  Ord, PartialOrd, , Debug for Types
 
 /// A trait allows Types with x, y, z coordinates to be efficiently initialized with common shorthand.
 pub trait CoordInit<T> {
@@ -91,7 +135,6 @@ pub trait CoordInit<T> {
     fn zero() -> T;
 }
 
-// TODO: Implement...
 /// A trait that encapsulates common Vector Operations.
 pub trait VecOps<T> {
     /// Computes the magnitude of a Vector.

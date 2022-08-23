@@ -244,7 +244,7 @@ fn vector_common_operations_integrity() {
     let a = Vector3::new(1.0, 2.0, 3.0);
     let b = Vector3::new(2.0, 3.0, 4.0);
     assert_eq!(Vector3::dot(a, b), 20f64);
-    // Cross product 
+    // Cross product
     assert_eq!(Vector3::cross(a, b), Vector3::new(-1.0, 2.0, -1.0));
     assert_eq!(Vector3::cross(b, a), Vector3::new(1.0, -2.0, 1.0));
     // Min, Max and Get Components
@@ -254,47 +254,51 @@ fn vector_common_operations_integrity() {
     assert_eq!(a.this(9), None);
     assert_eq!(b.this(b.min_component().0).unwrap(), (0, 'x', 2.0));
     assert_eq!(a.this_name('z').unwrap(), (2, 'z', 3.0));
-    
 }
 
 #[test]
 // This test validates integrity by simulating a rocket launch
-fn simulate_rocket_lauch(){
-
+fn simulate_rocket_lauch() {
     #[derive(Debug)]
-    struct Projectile{
+    struct Projectile {
         position: Point3,
         velocity: Vector3,
     }
 
-    struct Environment{
+    struct Environment {
         gravity: Vector3,
         wind: Vector3,
     }
 
-    let mut proj = Projectile{
+    let mut proj = Projectile {
         position: Point3::up(),
-        velocity: Vector3::new(1.0, 1.0, 0.0).normalized() 
+        velocity: Vector3::new(1.0, 1.0, 0.0).normalized(),
     };
 
-    let env = Environment{
-        gravity: Vector3::down()/10f64,
-        wind: Vector3::left()/100f64,
+    let env = Environment {
+        gravity: Vector3::down() / 10f64,
+        wind: Vector3::left() / 100f64,
     };
-    
+
     fn tick<'a, 'b>(env: &'a Environment, proj: &'b mut Projectile) -> &'b mut Projectile {
         proj.position = proj.position + proj.velocity;
-        proj.velocity = proj.velocity + env.gravity + env.wind; 
+        proj.velocity = proj.velocity + env.gravity + env.wind;
         proj
     }
 
-    println!("Launch position: - x: {:^5.2}, y: {:^5.2}, z: {:^5.2}", proj.position.x, proj.position.y, proj.position.z);
+    println!(
+        "Launch position: - x: {:^5.2}, y: {:^5.2}, z: {:^5.2}",
+        proj.position.x, proj.position.y, proj.position.z
+    );
     while proj.position.y > 0.0 {
         tick(&env, &mut proj);
         if proj.position.y <= 0.0 {
             break;
         }
-        println!("Projectile position - x: {:^5.2}, y: {:^5.2}, z: {:^5.2}", proj.position.x, proj.position.y, proj.position.z);
+        println!(
+            "Projectile position - x: {:^5.2}, y: {:^5.2}, z: {:^5.2}",
+            proj.position.x, proj.position.y, proj.position.z
+        );
     }
     println!("========================== End");
 }
