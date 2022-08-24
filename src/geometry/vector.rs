@@ -111,21 +111,21 @@ impl Default for Vector3<f64> {
 
 // TODO:  Ord, PartialOrd, , Debug for Types
 
-/// A trait allows Types with x, y, z coordinates to be efficiently initialized with common shorthand.
+/// Trait allows Types with coordinates (x, y, etc.) to be efficiently initialized with common shorthand.
 pub trait CoordInit<T> {
-    /// Return a type with shorthand [0, 0, -1].
+    /// Return a type with shorthand, for example [0, 0, -1].
     fn back() -> T;
-    /// Return a type with shorthand [0, -1, 0].
+    /// Return a type with shorthand, for example  [0, -1, 0].
     fn down() -> T;
     /// Return true if a type is identical to another, else return false.
     fn equal(self, rhs: Self) -> bool;
-    /// Return a type with shorthand [0, 0, 1].
+    /// Return a type with shorthand, for example  [0, 0, 1].
     fn forward() -> T;
-    /// Return a type with shorthand [-1, 0, 0].
+    /// Return a type with shorthand, for example  [-1, 0, 0].
     fn left() -> T;
     /// Return a type with user-defined x, y, z components.
     fn new(x: f64, y: f64, z: f64) -> T;
-    /// Return a type with shorthand [1, 1, 1].
+    /// Return a type with shorthand, for example  [1, 1, 1].
     fn one() -> T;
     /// Return a type with shorthand [1, 0, 0].
     fn right() -> T;
