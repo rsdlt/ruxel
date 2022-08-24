@@ -30,13 +30,13 @@ fn test_projectile_launch_canvas() {
 
     #[derive(Debug)]
     struct Projectile {
-        position: Point3,
-        velocity: Vector3,
+        position: Point3<f64>,
+        velocity: Vector3<f64>,
     }
 
     struct Environment {
-        gravity: Vector3,
-        wind: Vector3,
+        gravity: Vector3<f64>,
+        wind: Vector3<f64>,
     }
 
     let mut proj = Projectile {

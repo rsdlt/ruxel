@@ -23,11 +23,14 @@ use geometry::vector::{CoordInit, Point3, Vector3};
 
 use picture::colors::{ColorInit, ColorRgb};
 
-/// The geometry module implements the functionality for Points, Vectors, Matrices, and their transformations
+/**
+The geometry module implements the functionality for Points, Vectors, Matrices, and their transformations
+*/
 pub mod geometry;
 
-/// The picture module implements the functionality for Canvas and Colors in order to create and
-/// image file.
+/**
+The picture module implements the functionality for Canvas and Colors in order to create an image file.
+*/
 pub mod picture;
 
 fn main() {

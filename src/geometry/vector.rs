@@ -25,29 +25,29 @@ use super::EPSILON;
 
 /// Type representing a geometric 3D Vector with x, y, z components.
 #[derive(Debug, Clone, Copy)]
-pub struct Vector3 {
+pub struct Vector3<T> {
     /// Component on x axis
-    pub x: f64,
+    pub x: T,
     /// Component on y axis
-    pub y: f64,
+    pub y: T,
     /// Component on z axis
-    pub z: f64,
+    pub z: T,
 }
 
 /// Type representing a geometric 3D Point with x, y, z components.  
 #[derive(Debug, Clone, Copy)]
-pub struct Point3 {
+pub struct Point3<T> {
     /// Component on x axis
-    pub x: f64,
+    pub x: T,
     /// Component on y axis
-    pub y: f64,
+    pub y: T,
     /// Component on z axis
-    pub z: f64,
-    /// Component on w axis
-    pub w: f64,
+    pub z: T,
+    /// Component representing the 'weight' 
+    pub w: T,
 }
 
-impl PartialEq for Vector3 {
+impl PartialEq for Vector3<f64> {
     fn eq(&self, other: &Self) -> bool {
         self.x == other.x && self.y == other.y && self.z == other.z
     }
@@ -57,9 +57,9 @@ impl PartialEq for Vector3 {
     }
 }
 
-impl Eq for Vector3 {}
+impl Eq for Vector3<f64> {}
 
-impl PartialEq for Point3 {
+impl PartialEq for Point3<f64> {
     fn eq(&self, other: &Self) -> bool {
         self.x == other.x && self.y == other.y && self.z == other.z && self.w == other.w
     }
@@ -69,16 +69,16 @@ impl PartialEq for Point3 {
     }
 }
 
-impl Eq for Point3 {}
+impl Eq for Point3<f64> {}
 
-impl Display for Vector3 {
+impl Display for Vector3<f64> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = format!("v: [{:^5.2},{:^5.2},{:^5.2}]", self.x, self.y, self.z);
         f.write_str(&s)
     }
 }
 
-impl Display for Point3 {
+impl Display for Point3<f64> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = format!(
             "p: [{:^5.2},{:^5.2},{:^5.2},{:^5.2}]",
@@ -88,7 +88,7 @@ impl Display for Point3 {
     }
 }
 
-impl Default for Point3 {
+impl Default for Point3<f64> {
     fn default() -> Self {
         Self {
             x: 0.0,
@@ -99,7 +99,7 @@ impl Default for Point3 {
     }
 }
 
-impl Default for Vector3 {
+impl Default for Vector3<f64> {
     fn default() -> Self {
         Self {
             x: 0.0,
@@ -155,7 +155,7 @@ pub trait VecOps<T> {
     fn this_name(&self, index: char) -> Option<(i8, char, f64)>;
 }
 
-impl VecOps<Vector3> for Vector3 {
+impl VecOps<Vector3<f64>> for Vector3<f64> {
     fn magnitude(&self) -> f64 {
         (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0)).sqrt()
     }
@@ -169,11 +169,11 @@ impl VecOps<Vector3> for Vector3 {
         }
     }
 
-    fn dot(lhs: Vector3, rhs: Vector3) -> f64 {
+    fn dot(lhs: Vector3<f64>, rhs: Vector3<f64>) -> f64 {
         lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
     }
 
-    fn cross(lhs: Vector3, rhs: Vector3) -> Vector3 {
+    fn cross(lhs: Vector3<f64>, rhs: Vector3<f64>) -> Vector3<f64> {
         Vector3 {
             x: lhs.y * rhs.z - lhs.z * rhs.y,
             y: lhs.z * rhs.x - lhs.x * rhs.z,
@@ -220,15 +220,15 @@ impl VecOps<Vector3> for Vector3 {
     }
 }
 
-impl CoordInit<Vector3> for Vector3 {
-    fn back() -> Vector3 {
+impl CoordInit<Vector3<f64>> for Vector3<f64> {
+    fn back() -> Vector3<f64> {
         Vector3 {
             x: 0.0,
             y: 0.0,
             z: -1.0,
         }
     }
-    fn down() -> Vector3 {
+    fn down() -> Vector3<f64> {
         Vector3 {
             x: 0.0,
             y: -1.0,
@@ -246,7 +246,7 @@ impl CoordInit<Vector3> for Vector3 {
         }
     }
 
-    fn forward() -> Vector3 {
+    fn forward() -> Vector3<f64> {
         Vector3 {
             x: 0.0,
             y: 0.0,
@@ -254,7 +254,7 @@ impl CoordInit<Vector3> for Vector3 {
         }
     }
 
-    fn left() -> Vector3 {
+    fn left() -> Vector3<f64> {
         Vector3 {
             x: -1.0,
             y: 0.0,
@@ -262,7 +262,7 @@ impl CoordInit<Vector3> for Vector3 {
         }
     }
 
-    fn new(x: f64, y: f64, z: f64) -> Vector3 {
+    fn new(x: f64, y: f64, z: f64) -> Vector3<f64> {
         Vector3 { x, y, z }
     }
 
@@ -274,7 +274,7 @@ impl CoordInit<Vector3> for Vector3 {
         }
     }
 
-    fn right() -> Vector3 {
+    fn right() -> Vector3<f64> {
         Vector3 {
             x: 1.0,
             y: 0.0,
@@ -282,7 +282,7 @@ impl CoordInit<Vector3> for Vector3 {
         }
     }
 
-    fn up() -> Vector3 {
+    fn up() -> Vector3<f64> {
         Vector3 {
             x: 0.0,
             y: 1.0,
@@ -299,8 +299,8 @@ impl CoordInit<Vector3> for Vector3 {
     }
 }
 
-impl CoordInit<Point3> for Point3 {
-    fn back() -> Point3 {
+impl CoordInit<Point3<f64>> for Point3<f64> {
+    fn back() -> Point3<f64> {
         Point3 {
             x: 0.0,
             y: 0.0,
@@ -309,7 +309,7 @@ impl CoordInit<Point3> for Point3 {
         }
     }
 
-    fn down() -> Point3 {
+    fn down() -> Point3<f64> {
         Point3 {
             x: 0.0,
             y: -1.0,
@@ -330,7 +330,7 @@ impl CoordInit<Point3> for Point3 {
         }
     }
 
-    fn forward() -> Point3 {
+    fn forward() -> Point3<f64> {
         Point3 {
             x: 0.0,
             y: 0.0,
@@ -339,7 +339,7 @@ impl CoordInit<Point3> for Point3 {
         }
     }
 
-    fn left() -> Point3 {
+    fn left() -> Point3<f64> {
         Point3 {
             x: -1.0,
             y: 0.0,
@@ -348,7 +348,7 @@ impl CoordInit<Point3> for Point3 {
         }
     }
 
-    fn new(x: f64, y: f64, z: f64) -> Point3 {
+    fn new(x: f64, y: f64, z: f64) -> Point3<f64> {
         Point3 { x, y, z, w: 1f64 }
     }
 
@@ -361,7 +361,7 @@ impl CoordInit<Point3> for Point3 {
         }
     }
 
-    fn right() -> Point3 {
+    fn right() -> Point3<f64> {
         Point3 {
             x: 1.0,
             y: 0.0,
@@ -370,7 +370,7 @@ impl CoordInit<Point3> for Point3 {
         }
     }
 
-    fn up() -> Point3 {
+    fn up() -> Point3<f64> {
         Point3 {
             x: 0.0,
             y: 1.0,
@@ -389,10 +389,10 @@ impl CoordInit<Point3> for Point3 {
     }
 }
 
-impl Add<Point3> for Vector3 {
-    type Output = Point3;
+impl Add<Point3<f64>> for Vector3<f64> {
+    type Output = Point3<f64>;
 
-    fn add(self, rhs: Point3) -> Point3 {
+    fn add(self, rhs: Point3<f64>) -> Point3<f64> {
         Point3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
@@ -402,10 +402,10 @@ impl Add<Point3> for Vector3 {
     }
 }
 
-impl Add<Vector3> for Point3 {
-    type Output = Point3;
+impl Add<Vector3<f64>> for Point3<f64> {
+    type Output = Point3<f64>;
 
-    fn add(self, rhs: Vector3) -> Point3 {
+    fn add(self, rhs: Vector3<f64>) -> Point3<f64> {
         Point3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
@@ -415,10 +415,10 @@ impl Add<Vector3> for Point3 {
     }
 }
 
-impl Add for Vector3 {
-    type Output = Vector3;
+impl Add for Vector3<f64> {
+    type Output = Vector3<f64>;
 
-    fn add(self, rhs: Self) -> Vector3 {
+    fn add(self, rhs: Self) -> Vector3<f64> {
         Vector3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
@@ -427,10 +427,10 @@ impl Add for Vector3 {
     }
 }
 
-impl Sub for Vector3 {
-    type Output = Vector3;
+impl Sub for Vector3<f64> {
+    type Output = Vector3<f64>;
 
-    fn sub(self, rhs: Self) -> Vector3 {
+    fn sub(self, rhs: Self) -> Vector3<f64> {
         Vector3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
@@ -439,10 +439,10 @@ impl Sub for Vector3 {
     }
 }
 
-impl Sub for Point3 {
-    type Output = Vector3;
+impl Sub for Point3<f64> {
+    type Output = Vector3<f64>;
 
-    fn sub(self, rhs: Self) -> Vector3 {
+    fn sub(self, rhs: Self) -> Vector3<f64> {
         Vector3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
@@ -451,10 +451,10 @@ impl Sub for Point3 {
     }
 }
 
-impl Sub<Vector3> for Point3 {
-    type Output = Point3;
+impl Sub<Vector3<f64>> for Point3<f64> {
+    type Output = Point3<f64>;
 
-    fn sub(self, rhs: Vector3) -> Point3 {
+    fn sub(self, rhs: Vector3<f64>) -> Point3<f64> {
         Point3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
@@ -464,10 +464,10 @@ impl Sub<Vector3> for Point3 {
     }
 }
 
-impl Neg for Vector3 {
-    type Output = Vector3;
+impl Neg for Vector3<f64> {
+    type Output = Vector3<f64>;
 
-    fn neg(self) -> Vector3 {
+    fn neg(self) -> Vector3<f64> {
         Vector3 {
             x: -self.x,
             y: -self.y,
@@ -476,10 +476,10 @@ impl Neg for Vector3 {
     }
 }
 
-impl Neg for Point3 {
-    type Output = Point3;
+impl Neg for Point3<f64> {
+    type Output = Point3<f64>;
 
-    fn neg(self) -> Point3 {
+    fn neg(self) -> Point3<f64> {
         Point3 {
             x: -self.x,
             y: -self.y,
@@ -489,10 +489,10 @@ impl Neg for Point3 {
     }
 }
 
-impl Mul<f64> for Vector3 {
-    type Output = Vector3;
+impl Mul<f64> for Vector3<f64> {
+    type Output = Vector3<f64>;
 
-    fn mul(self, rhs: f64) -> Vector3 {
+    fn mul(self, rhs: f64) -> Vector3<f64> {
         Vector3 {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -501,10 +501,10 @@ impl Mul<f64> for Vector3 {
     }
 }
 
-impl Mul<f64> for Point3 {
-    type Output = Point3;
+impl Mul<f64> for Point3<f64> {
+    type Output = Point3<f64>;
 
-    fn mul(self, rhs: f64) -> Point3 {
+    fn mul(self, rhs: f64) -> Point3<f64> {
         Point3 {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -514,9 +514,9 @@ impl Mul<f64> for Point3 {
     }
 }
 
-impl Div<f64> for Vector3 {
-    type Output = Vector3;
-    fn div(self, rhs: f64) -> Vector3 {
+impl Div<f64> for Vector3<f64> {
+    type Output = Vector3<f64>;
+    fn div(self, rhs: f64) -> Vector3<f64> {
         Vector3 {
             x: self.x / rhs,
             y: self.y / rhs,
@@ -525,9 +525,9 @@ impl Div<f64> for Vector3 {
     }
 }
 
-impl Div<f64> for Point3 {
-    type Output = Point3;
-    fn div(self, rhs: f64) -> Point3 {
+impl Div<f64> for Point3<f64> {
+    type Output = Point3<f64>;
+    fn div(self, rhs: f64) -> Point3<f64> {
         Point3 {
             x: self.x / rhs,
             y: self.y / rhs,
@@ -537,7 +537,7 @@ impl Div<f64> for Point3 {
     }
 }
 
-impl AddAssign for Vector3 {
+impl AddAssign for Vector3<f64> {
     fn add_assign(&mut self, other: Self) {
         *self = Self {
             x: self.x + other.x,
@@ -547,7 +547,7 @@ impl AddAssign for Vector3 {
     }
 }
 
-impl SubAssign for Vector3 {
+impl SubAssign for Vector3<f64> {
     fn sub_assign(&mut self, other: Self) {
         *self = Self {
             x: self.x - other.x,
