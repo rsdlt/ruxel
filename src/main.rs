@@ -19,7 +19,11 @@ Ruxel allows rendering and ray tracing of:
 
 */
 
-use geometry::vector::{CoordInit, Point3, Vector3};
+use geometry::vector::{
+    Axis,
+    Axis::{XY as xy, XYZ as xyz, XYZW as xyzw},
+    CoordInit, Point3, Vector3,
+};
 
 use picture::colors::{ColorInit, ColorRgb};
 
@@ -40,4 +44,13 @@ fn main() {
 
     let c = ColorRgb::red();
     println!("{}", c);
+
+    // let vn = Vector3::new_new(Axis::XYZ {x: 1.0, y:2.0, z:4.0 });
+    // let vnn = Vector3::new_new(Axis::XYZW { x: 0.0, y: 2.0, z: 3.0, w: 4.0 });
+    let vec2 = Vector2::new(xy(1.0, 2.0));
+    let vec3 = Vector3::new(xyz(1.0, 2.0, 3.0));
+    let vec4 = Vector4::new(xyzw(1.0, 2.0, 3.0, 4.0));
+    let point2 = Point2::new(xy(1.0, 2.0));
+    let point3 = Point3::new(xyz(1.0, 2.0, 3.0));
+    let point4 = Point4::new(xyzw(1.0, 2.0, 3.0, 4.0));
 }

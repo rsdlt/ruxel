@@ -8,6 +8,7 @@
 
 /// Unit testing for the Canvas types
 use super::*;
+use crate::Axis::XYZ as xyz;
 
 #[test]
 // This test validates the writing of a Canvas
@@ -41,7 +42,7 @@ fn test_projectile_launch_canvas() {
 
     let mut proj = Projectile {
         position: Point3::up(),
-        velocity: Vector3::new(1.0, 1.8, 0.0).normalized() * 11.25,
+        velocity: Vector3::new(xyz(1.0, 1.8, 0.0)).normalized() * 11.25,
     };
 
     let env = Environment {

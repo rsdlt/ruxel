@@ -23,6 +23,20 @@ mod tests;
 // Bring geometry module constants into scope
 use super::EPSILON;
 
+/**
+Enumerator that encapsulates the different coordinate systems used to initialize a Vector or Point
+Point
+*/
+#[derive(Debug)]
+pub enum Axis<U> {
+    /// Coordinate system with X and Y axis.
+    XY(U, U),
+    /// Coordinate system with X, Y and Z axis.
+    XYZ(U, U, U),
+    /// Coordinate system with X, Y, Z and W axis.
+    XYZW(U, U, U, U),
+}
+
 /// Type representing a geometric 3D Vector with x, y, z components.
 #[derive(Debug, Clone, Copy)]
 pub struct Vector3<T> {
@@ -43,7 +57,7 @@ pub struct Point3<T> {
     pub y: T,
     /// Component on z axis
     pub z: T,
-    /// Component representing the 'weight' 
+    /// Component representing the 'weight'
     pub w: T,
 }
 
@@ -112,7 +126,7 @@ impl Default for Vector3<f64> {
 // TODO:  Ord, PartialOrd, , Debug for Types
 
 /// Trait allows Types with coordinates (x, y, etc.) to be efficiently initialized with common shorthand.
-pub trait CoordInit<T> {
+pub trait CoordInit<T, U> {
     /// Return a type with shorthand, for example [0, 0, -1].
     fn back() -> T;
     /// Return a type with shorthand, for example  [0, -1, 0].
@@ -123,8 +137,8 @@ pub trait CoordInit<T> {
     fn forward() -> T;
     /// Return a type with shorthand, for example  [-1, 0, 0].
     fn left() -> T;
-    /// Return a type with user-defined x, y, z components.
-    fn new(x: f64, y: f64, z: f64) -> T;
+    /// Return a type with user-defined Axis components.
+    fn new(axis: Axis<U>) -> T;
     /// Return a type with shorthand, for example  [1, 1, 1].
     fn one() -> T;
     /// Return a type with shorthand [1, 0, 0].
@@ -220,7 +234,7 @@ impl VecOps<Vector3<f64>> for Vector3<f64> {
     }
 }
 
-impl CoordInit<Vector3<f64>> for Vector3<f64> {
+impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
     fn back() -> Vector3<f64> {
         Vector3 {
             x: 0.0,
@@ -262,8 +276,12 @@ impl CoordInit<Vector3<f64>> for Vector3<f64> {
         }
     }
 
-    fn new(x: f64, y: f64, z: f64) -> Vector3<f64> {
-        Vector3 { x, y, z }
+    fn new(axis: Axis<f64>) -> Vector3<f64> {
+        match axis {
+            Axis::XY(x, y) => Vector3 { x, y, z: 0.0 },
+            Axis::XYZ(x, y, z) => Vector3 { x, y, z },
+            Axis::XYZW(x, y, z, _w) => Vector3 { x, y, z },
+        }
     }
 
     fn one() -> Self {
@@ -299,7 +317,7 @@ impl CoordInit<Vector3<f64>> for Vector3<f64> {
     }
 }
 
-impl CoordInit<Point3<f64>> for Point3<f64> {
+impl CoordInit<Point3<f64>, f64> for Point3<f64> {
     fn back() -> Point3<f64> {
         Point3 {
             x: 0.0,
@@ -348,10 +366,6 @@ impl CoordInit<Point3<f64>> for Point3<f64> {
         }
     }
 
-    fn new(x: f64, y: f64, z: f64) -> Point3<f64> {
-        Point3 { x, y, z, w: 1f64 }
-    }
-
     fn one() -> Self {
         Point3 {
             x: 1.0,
@@ -385,6 +399,19 @@ impl CoordInit<Point3<f64>> for Point3<f64> {
             y: 0.0,
             z: 0.0,
             w: 1.0,
+        }
+    }
+
+    fn new(axis: Axis<f64>) -> Point3<f64> {
+        match axis {
+            Axis::XY(x, y) => Point3 {
+                x,
+                y,
+                z: 0.0,
+                w: 1.0,
+            },
+            Axis::XYZ(x, y, z) => Point3 { x, y, z, w: 1.0 },
+            Axis::XYZW(x, y, z, _w) => Point3 { x, y, z, w: 1.0 },
         }
     }
 }
