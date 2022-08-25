@@ -415,7 +415,7 @@ impl Add<Point3<f64>> for Vector3<f64> {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
             z: self.z + rhs.z,
-            w: rhs.w,
+            w: self.w + rhs.w,
         }
     }
 }
@@ -428,7 +428,7 @@ impl Add<Vector3<f64>> for Point3<f64> {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
             z: self.z + rhs.z,
-            w: self.w,
+            w: self.w + rhs.w,
         }
     }
 }
@@ -506,7 +506,7 @@ impl Neg for Point3<f64> {
             x: -self.x,
             y: -self.y,
             z: -self.z,
-            w: self.w,
+            w: -self.w,
         }
     }
 }
@@ -532,7 +532,7 @@ impl Mul<f64> for Point3<f64> {
             x: self.x * rhs,
             y: self.y * rhs,
             z: self.z * rhs,
-            w: self.w,
+            w: self.w * rhs,
         }
     }
 }
@@ -556,7 +556,7 @@ impl Div<f64> for Point3<f64> {
             x: self.x / rhs,
             y: self.y / rhs,
             z: self.z / rhs,
-            w: self.w,
+            w: self.w / rhs,
         }
     }
 }
