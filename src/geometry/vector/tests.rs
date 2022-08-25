@@ -26,7 +26,8 @@ fn vector_and_point_construction_integrity() {
         Vector3 {
             x: 1.0,
             y: 1.0,
-            z: 1.0
+            z: 1.0,
+            w: 0.0
         },
         v_one
     );
@@ -34,7 +35,8 @@ fn vector_and_point_construction_integrity() {
         Vector3 {
             x: 0.0,
             y: 0.0,
-            z: 0.0
+            z: 0.0,
+            w: 0.0,
         },
         v_zero
     );
@@ -42,7 +44,8 @@ fn vector_and_point_construction_integrity() {
         Vector3 {
             x: 0.0,
             y: 0.0,
-            z: -1.0
+            z: -1.0,
+            w: 0.0,
         },
         v_back
     );
@@ -50,7 +53,8 @@ fn vector_and_point_construction_integrity() {
         Vector3 {
             x: 0.0,
             y: -1.0,
-            z: 0.0
+            z: 0.0,
+            w: 0.0,
         },
         v_down
     );
@@ -58,7 +62,8 @@ fn vector_and_point_construction_integrity() {
         Vector3 {
             x: 0.0,
             y: 0.0,
-            z: 1.0
+            z: 1.0,
+            w: 0.0,
         },
         v_forward
     );
@@ -66,7 +71,8 @@ fn vector_and_point_construction_integrity() {
         Vector3 {
             x: -1.0,
             y: 0.0,
-            z: 0.0
+            z: 0.0,
+            w: 0.0,
         },
         v_left
     );
@@ -74,7 +80,8 @@ fn vector_and_point_construction_integrity() {
         Vector3 {
             x: 1.0,
             y: 0.0,
-            z: 0.0
+            z: 0.0,
+            w: 0.0,
         },
         v_right
     );
@@ -82,7 +89,8 @@ fn vector_and_point_construction_integrity() {
         Vector3 {
             x: 0.0,
             y: 1.0,
-            z: 0.0
+            z: 0.0,
+            w: 0.0,
         },
         v_up
     );
@@ -184,7 +192,8 @@ fn vector_and_point_operator_overloading_integrity() {
         Vector3 {
             x: 5.0,
             y: 11.0,
-            z: 12.0
+            z: 12.0,
+            w: 0.0,
         }
     );
     // Subs two Vector3
@@ -193,7 +202,8 @@ fn vector_and_point_operator_overloading_integrity() {
         Vector3 {
             x: -1.0,
             y: -4.0,
-            z: -4.0
+            z: -4.0,
+            w: 0.0,
         }
     );
     // Mul Vector3 by scalar
@@ -202,7 +212,8 @@ fn vector_and_point_operator_overloading_integrity() {
         Vector3 {
             x: 6.0,
             y: 10.5,
-            z: 12.0
+            z: 12.0,
+            w: 0.0,
         }
     );
     // Validate Equality

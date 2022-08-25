@@ -33,11 +33,12 @@ pub enum Axis<U> {
     XY(U, U),
     /// Coordinate system with X, Y and Z axis.
     XYZ(U, U, U),
-    /// Coordinate system with X, Y, Z and W axis.
+    /// Coordinate system with X, Y, Z axis and W component.
     XYZW(U, U, U, U),
 }
 
-/// Type representing a geometric 3D Vector with x, y, z components.
+/// Type representing a geometric 3D Vector in its 'homogeneous' form with x, y, z, w components,
+/// and where 'w' stands for 'weight'
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct Vector3<T> {
     /// Component on x axis
@@ -46,9 +47,12 @@ pub struct Vector3<T> {
     pub y: T,
     /// Component on z axis
     pub z: T,
+    /// Component on w axis
+    pub w: T,
 }
 
-/// Type representing a geometric 3D Point with x, y, z components.  
+/// Type representing a geometric 3D Point in its 'homogeneous' form with x, y, z components, and
+/// where 'W' stands for 'weight'
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct Point3<T> {
     /// Component on x axis
@@ -95,6 +99,7 @@ impl Default for Vector3<f64> {
             x: 0.0,
             y: 0.0,
             z: 0.0,
+            w: 0.0,
         }
     }
 }
@@ -156,6 +161,7 @@ impl VecOps<Vector3<f64>> for Vector3<f64> {
             x: self.x / magnitude,
             y: self.y / magnitude,
             z: self.z / magnitude,
+            w: 0.0
         }
     }
 
@@ -168,6 +174,7 @@ impl VecOps<Vector3<f64>> for Vector3<f64> {
             x: lhs.y * rhs.z - lhs.z * rhs.y,
             y: lhs.z * rhs.x - lhs.x * rhs.z,
             z: lhs.x * rhs.y - lhs.y * rhs.x,
+            w: 0.0
         }
     }
 
@@ -216,6 +223,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
             x: 0.0,
             y: 0.0,
             z: -1.0,
+            w: 0.0
         }
     }
     fn down() -> Self {
@@ -223,6 +231,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
             x: 0.0,
             y: -1.0,
             z: 0.0,
+            w: 0.0
         }
     }
     fn equal(self, other: Self) -> bool {
@@ -241,6 +250,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
             x: 0.0,
             y: 0.0,
             z: 1.0,
+            w: 0.0,
         }
     }
 
@@ -249,14 +259,15 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
             x: -1.0,
             y: 0.0,
             z: 0.0,
+            w: 0.0,
         }
     }
 
     fn new(axis: Axis<f64>) -> Vector3<f64> {
         match axis {
-            Axis::XY(x, y) => Vector3 { x, y, z: 0.0 },
-            Axis::XYZ(x, y, z) => Vector3 { x, y, z },
-            Axis::XYZW(x, y, z, _w) => Vector3 { x, y, z },
+            Axis::XY(x, y) => Vector3 { x, y, z: 0.0, w: 0.0 },
+            Axis::XYZ(x, y, z) => Vector3 { x, y, z, w: 0.0 },
+            Axis::XYZW(x, y, z, _w) => Vector3 { x, y, z, w:0.0 },
         }
     }
 
@@ -265,6 +276,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
             x: 1.0,
             y: 1.0,
             z: 1.0,
+            w: 0.0,
         }
     }
 
@@ -273,6 +285,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
             x: 1.0,
             y: 0.0,
             z: 0.0,
+            w: 0.0,
         }
     }
 
@@ -281,6 +294,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
             x: 0.0,
             y: 1.0,
             z: 0.0,
+            w: 0.0,
         }
     }
 
@@ -289,6 +303,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
             x: 0.0,
             y: 0.0,
             z: 0.0,
+            w: 0.0,
         }
     }
 }
@@ -426,6 +441,7 @@ impl Add for Vector3<f64> {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
             z: self.z + rhs.z,
+            w: 0.0,
         }
     }
 }
@@ -438,6 +454,7 @@ impl Sub for Vector3<f64> {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
+            w: 0.0,
         }
     }
 }
@@ -450,6 +467,7 @@ impl Sub for Point3<f64> {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
+            w: 0.0,
         }
     }
 }
@@ -475,6 +493,7 @@ impl Neg for Vector3<f64> {
             x: -self.x,
             y: -self.y,
             z: -self.z,
+            w: 0.0,
         }
     }
 }
@@ -500,6 +519,7 @@ impl Mul<f64> for Vector3<f64> {
             x: self.x * rhs,
             y: self.y * rhs,
             z: self.z * rhs,
+            w: 0.0,
         }
     }
 }
@@ -524,6 +544,7 @@ impl Div<f64> for Vector3<f64> {
             x: self.x / rhs,
             y: self.y / rhs,
             z: self.z / rhs,
+            w: 0.0,
         }
     }
 }
@@ -546,6 +567,7 @@ impl AddAssign for Vector3<f64> {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,
+            w: 0.0,
         }
     }
 }
@@ -556,6 +578,7 @@ impl SubAssign for Vector3<f64> {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,
+            w: 0.0,
         }
     }
 }
