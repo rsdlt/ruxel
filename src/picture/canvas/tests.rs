@@ -9,10 +9,12 @@
 /// Unit testing for the Canvas types
 use super::*;
 use crate::Axis::XYZ as xyz;
+use std::path::Path;
 
 #[test]
 // This test validates the writing of a Canvas
 fn test_print_to_ppm() {
+    let image_path = Path::new("images/test_path_to_print.ppm");
     let mut canvas = Canvas::new(5, 3);
     let c1 = ColorRgb::new(0.5, 0.0, 0.0);
     let c2 = ColorRgb::new(0.0, 0.5, 0.0);
@@ -21,13 +23,15 @@ fn test_print_to_ppm() {
     canvas.write_pixel(Pixel::new(2, 1, c2));
     canvas.write_pixel(Pixel::new(4, 2, c3));
     // TODO: Need to manage path to /images directory
-    canvas.write_to_ppm("test_to_print.ppm");
+    canvas.write_to_ppm(&image_path);
 }
 #[test]
 // This test validates the printing of a rocket trayectory using Vector and colors in a PPM Canvas
 fn test_projectile_launch_canvas() {
     // Bring Geometry module into scope for this test
     use crate::geometry::vector::*;
+
+    let image_path = Path::new("images/projectile_lauch.ppm");
 
     #[derive(Debug)]
     struct Projectile {
@@ -90,5 +94,5 @@ fn test_projectile_launch_canvas() {
     }
     // println!("========================== End");
 
-    canvas.write_to_ppm("test_projectile_lauch_canvas.ppm");
+    canvas.write_to_ppm(image_path);
 }

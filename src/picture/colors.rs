@@ -15,6 +15,8 @@ use std::{
     ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign},
 };
 
+use crate::geometry::EPSILON;
+
 // Colors Unit Tests
 #[cfg(test)]
 mod tests;
@@ -49,11 +51,12 @@ impl Default for ColorRgb {
 
 impl PartialEq for ColorRgb {
     fn eq(&self, other: &Self) -> bool {
-        self.r == other.r && self.g == other.g && self.b == other.b
+        // self.r == other.r && self.g == other.g && self.b == other.b
+        self.equal(other)
     }
 
     fn ne(&self, other: &Self) -> bool {
-        !self.eq(other)
+        !self.equal(other)
     }
 }
 impl Eq for ColorRgb {}
@@ -72,6 +75,8 @@ pub trait ColorInit<T> {
     fn black() -> T;
     /// .
     fn white() -> T;
+    /// .
+    fn equal(self, other:&T) -> bool;
 }
 
 impl ColorInit<ColorRgb> for ColorRgb {
@@ -117,6 +122,15 @@ impl ColorInit<ColorRgb> for ColorRgb {
             g: 1.0,
             b: 1.0,
         }
+    }
+
+    fn equal(self, other:&ColorRgb) -> bool {
+       if (self.r - other.r).abs() < EPSILON && (self.g - other.g).abs() < EPSILON && (self.b - other.b).abs() < EPSILON {
+           true
+       }
+       else{
+           false
+       }
     }
 }
 
@@ -174,9 +188,9 @@ impl Mul for ColorRgb {
 
 impl MulAssign for ColorRgb {
     fn mul_assign(&mut self, rhs: Self) {
-        self.r *= rhs.r;
-        self.g *= rhs.g;
-        self.b *= rhs.b;
+        self.r = self.r * rhs.r;
+        self.g = self.g * rhs.g;
+        self.b = self.b * rhs.b;
     }
 }
 

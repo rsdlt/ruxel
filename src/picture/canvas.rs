@@ -12,6 +12,7 @@ Data structure and operations for the Canvas and Pixel types
 use std::fmt::Display;
 use std::fs::OpenOptions;
 use std::io::Write;
+use std::path::Path;
 
 use crate::picture::colors::*;
 
@@ -42,14 +43,17 @@ pub struct Canvas {
 }
 
 impl Pixel {
+    /// Returns the color of this [`Pixel`].
     pub fn color(&self) -> ColorRgb {
         self.color
     }
 
+    /// Sets the color of this [`Pixel`].
     pub fn set_color(&mut self, c: ColorRgb) {
         self.color = c;
     }
 
+    /// Creates a new [`Pixel`].
     pub fn new(x: usize, y: usize, color: ColorRgb) -> Pixel {
         Pixel { x, y, color }
     }
@@ -73,6 +77,8 @@ impl Display for Pixel {
 }
 
 impl Canvas {
+    /// Creates a new of specified Width and Height
+    /// Returs the new Canvas filled with black pixels.
     pub fn new(width: usize, height: usize) -> Canvas {
         Canvas {
             width,
@@ -81,6 +87,7 @@ impl Canvas {
         }
     }
 
+    /// Fills the Canvas.data[[]] vector with pixels  
     pub fn write_pixel(&mut self, pixel: Pixel) {
         // Filling the canvas with the corresponding pixel color
         // In order to transform to Canvas coordinates we need to
@@ -90,7 +97,9 @@ impl Canvas {
         self.data[pixel.x][self.height - 1 - pixel.y] = pixel.color;
     }
 
-    pub fn write_to_ppm(&self, file_name: &str) {
+    // Iterates over the Canvas.data[[]] vector and generates a
+    /// PPM file with the proper format
+    pub fn write_to_ppm(&self, file_name:& Path) {
         let mut image = OpenOptions::new()
             .write(true)
             .create(true)
@@ -102,8 +111,11 @@ impl Canvas {
                                              // per row. Max # chars per color = 12;
                                              // Max # colors per row = 70 / 12 = 5.8 -> 5
 
+        // Begin formatting the PPM file with the header 
         let mut image_file_content = format!("{}\n{} {}\n{}\n", "P3", self.width, self.height, 255);
 
+        // Iterate over the Canvas.data[[]] vector
+        // Fill the PPM data file
         for i in 0..self.height {
             for j in 0..self.width {
                 if colors_per_ppm_line >= 5 {

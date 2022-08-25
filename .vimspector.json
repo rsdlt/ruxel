@@ -5,7 +5,7 @@
       "filetypes": [ "rust" ],
       "configuration": {
         "request": "launch",
-        "program": "${workspaceRoot}/target/debug/deps/it-276534f23c252fd3"
+        "program": "${workspaceRoot}/target/debug/deps/ruxel-6b30efdff903fb79"
       }
     }
   }
