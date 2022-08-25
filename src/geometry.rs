@@ -10,7 +10,7 @@
 The geometry module implements the functionality for Points, Vectors, Matrices, and their transformations
 */
 
-pub const EPSILON: f64 = 0.00001;
+pub const EPSILON: f64 = 0.0001;
 
 /// Provides data structures, methods and traits for Matrix4 computations.
 pub mod matrix;
