@@ -38,7 +38,7 @@ pub enum Axis<U> {
 }
 
 /// Type representing a geometric 3D Vector with x, y, z components.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct Vector3<T> {
     /// Component on x axis
     pub x: T,
@@ -49,7 +49,7 @@ pub struct Vector3<T> {
 }
 
 /// Type representing a geometric 3D Point with x, y, z components.  
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct Point3<T> {
     /// Component on x axis
     pub x: T,
@@ -60,30 +60,6 @@ pub struct Point3<T> {
     /// Component representing the 'weight'
     pub w: T,
 }
-
-impl PartialEq for Vector3<f64> {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y && self.z == other.z
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        !self.eq(other)
-    }
-}
-
-impl Eq for Vector3<f64> {}
-
-impl PartialEq for Point3<f64> {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y && self.z == other.z && self.w == other.w
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        !self.eq(other)
-    }
-}
-
-impl Eq for Point3<f64> {}
 
 impl Display for Vector3<f64> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -235,14 +211,14 @@ impl VecOps<Vector3<f64>> for Vector3<f64> {
 }
 
 impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
-    fn back() -> Vector3<f64> {
+    fn back() -> Self {
         Vector3 {
             x: 0.0,
             y: 0.0,
             z: -1.0,
         }
     }
-    fn down() -> Vector3<f64> {
+    fn down() -> Self {
         Vector3 {
             x: 0.0,
             y: -1.0,
@@ -260,7 +236,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
         }
     }
 
-    fn forward() -> Vector3<f64> {
+    fn forward() -> Self {
         Vector3 {
             x: 0.0,
             y: 0.0,
@@ -268,7 +244,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
         }
     }
 
-    fn left() -> Vector3<f64> {
+    fn left() -> Self {
         Vector3 {
             x: -1.0,
             y: 0.0,
@@ -292,7 +268,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
         }
     }
 
-    fn right() -> Vector3<f64> {
+    fn right() -> Self {
         Vector3 {
             x: 1.0,
             y: 0.0,
@@ -300,7 +276,7 @@ impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
         }
     }
 
-    fn up() -> Vector3<f64> {
+    fn up() -> Self {
         Vector3 {
             x: 0.0,
             y: 1.0,
