@@ -58,13 +58,15 @@ pub struct Matrix4<T> {
 
 #[derive(Debug, Clone, Copy)]
 /// Definition of Matrix3
-pub struct Matrix3<T> {
+/// Only used in this module to calculate Matrix4 determinat and cofactor
+pub(crate) struct Matrix3<T> {
     m: [[T; 3]; 3],
 }
 
 #[derive(Debug, Clone, Copy)]
 /// Definition of Matrix2
-pub struct Matrix2<T> {
+/// Only used in this module to calculate Matrix4 determinat and cofactor
+pub(crate) struct Matrix2<T> {
     m: [[T; 2]; 2],
 }
 
@@ -95,9 +97,53 @@ impl PartialEq for Matrix4<f64> {
 }
 impl Eq for Matrix4<f64> {}
 
+impl Matrix4<f64> {
+
+    pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix3<f64> {
+        let mut res = Matrix3::new();
+        let mut r_count = 0;
+        let mut c_count = 0;
+
+        for row in 0..4 {
+            if row != row_del {
+                for col in 0..4 {
+                    if col != col_del {
+                        res.m[r_count][c_count] = self.m[row][col];
+                        c_count += 1;
+                    }
+                }
+                c_count = 0;
+                r_count += 1;
+            }
+        }
+        res
+    }
+
+    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> f64{
+        self.submatrix(row_del, col_del).determinant()
+    }
+
+    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> f64{
+        if (row_del + col_del) % 2 == 0 {
+            self.minor(row_del, col_del)
+        }
+        else {
+            -self.minor(row_del, col_del)
+        }
+    }
+
+    pub(crate) fn determinant(self) -> f64{
+        let mut det = 0f64;
+        for col in 0..4{
+           det = det + self.m[0][col] * self.cofactor(0, col);
+       } 
+        det
+    }
+
+}
+
 /// Provides the capabilities to initialize a Matrix
-pub trait Matrix4Init<T> {
-    /// Validates if two matrices are equal
+pub trait Matrix4Ops<T> {
     fn equal(&self, other: &Self) -> bool;
     /// Returns the row of the matrix based on an user-defined index
     fn get_row(&self, index: Matrix4Index) -> Matrix4Row<T>;
@@ -110,11 +156,14 @@ pub trait Matrix4Init<T> {
     fn identity() -> Self;
     /// Returns a new matrix filled with '1'
     fn one() -> Self;
+    /// Transposes a Matrix
+    fn transpose(self) -> Self;
     /// Returns a new matrix filled with '0'
     fn zero() -> Self;
 }
 
-impl Matrix4Init<f64> for Matrix4<f64> {
+impl Matrix4Ops<f64> for Matrix4<f64> {
+
     fn equal(&self, other: &Self) -> bool {
         let mut flag = true;
         for i in 0..4 {
@@ -196,7 +245,7 @@ impl Matrix4Init<f64> for Matrix4<f64> {
 
     fn new(data: Option<Matrix4Data<f64>>) -> Self {
         match data {
-            None => Matrix4Init::zero(),
+            None => Matrix4Ops::zero(),
             Some(data) => Self { m: data },
         }
     }
@@ -218,6 +267,17 @@ impl Matrix4Init<f64> for Matrix4<f64> {
 
     fn zero() -> Self {
         Self { m: [[0.0; 4]; 4] }
+    }
+
+    fn transpose(self) -> Self {
+        let mut res = Matrix4::zero();
+        for row in 0..4 {
+            res.m[0][row] = self.m[row][0];
+            res.m[1][row] = self.m[row][1];
+            res.m[2][row] = self.m[row][2];
+            res.m[3][row] = self.m[row][3];
+        }
+        res
     }
 }
 
@@ -325,4 +385,61 @@ impl Mul<Matrix4<f64>> for Vector3<f64> {
         }
         v_res
     }
+}
+
+impl Matrix2<f64> {
+    pub(crate) fn new() -> Self {
+        Self { m: [[0f64; 2]; 2] }
+    }
+    pub(crate) fn determinant(self) -> f64 {
+        self.m[0][0] * self.m[1][1] - self.m[0][1] * self.m[1][0]
+    }
+}
+
+impl Matrix3<f64> {
+    pub(crate) fn new() -> Self {
+        Self { m: [[0f64; 3]; 3] }
+    }
+
+    pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix2<f64> {
+        let mut res = Matrix2::new();
+        let mut r_count = 0;
+        let mut c_count = 0;
+
+        for row in 0..3 {
+            if row != row_del {
+                for col in 0..3 {
+                    if col != col_del {
+                        res.m[r_count][c_count] = self.m[row][col];
+                        c_count += 1;
+                    }
+                }
+                c_count = 0;
+                r_count += 1;
+            }
+        }
+        res
+    }
+
+    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> f64{
+        self.submatrix(row_del, col_del).determinant()
+    }
+
+    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> f64{
+        if (row_del + col_del) % 2 == 0 {
+            self.minor(row_del, col_del)
+        }
+        else {
+            -self.minor(row_del, col_del)
+        }
+    }
+
+    pub(crate) fn determinant(self) -> f64{
+        let mut det = 0f64;
+        for col in 0..3{
+           det = det + self.m[0][col] * self.cofactor(0, col);
+       } 
+        det
+    }
+
 }

@@ -22,7 +22,7 @@ Ruxel allows rendering and ray tracing of:
 #![allow(unused_imports)]
 
 use geometry::{
-    matrix::{Matrix4, Matrix4Init},
+    matrix::{Matrix4, Matrix4Ops},
     vector::{
         Axis,
         Axis::{XY as xy, XYZ as xyz, XYZW as xyzw},
@@ -42,13 +42,4 @@ The picture module implements the functionality for Canvas and Colors in order t
 */
 pub mod picture;
 
-fn main() {
-    let m = Matrix4::identity();
-    println!("{}", m);
-
-    let m2 = Matrix4::identity();
-
-    if m.equal(&m2) {
-        println!("equal");
-    }
-}
+fn main() {}

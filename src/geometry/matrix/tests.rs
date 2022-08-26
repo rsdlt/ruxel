@@ -101,4 +101,110 @@ fn test_matrix_multiplication() {
 
     // test identity matrix multiplication
     assert_eq!(m3, m3 * Matrix4::identity());
+    assert_eq!(
+        Matrix4::identity() * Vector3::new(xyzw(1.0, 2.0, 3.0, 1.0)),
+        Vector3::new(xyzw(1.0, 2.0, 3.0, 1.0))
+    );
 }
+
+#[test]
+fn test_matrix_transpose() {
+    let m1 = Matrix4::new(Some([
+        [0f64, 9f64, 3f64, 0f64],
+        [9f64, 8f64, 0f64, 8f64],
+        [1f64, 8f64, 5f64, 3f64],
+        [0f64, 0f64, 5f64, 8f64],
+    ]));
+
+    println!("{}", m1.transpose());
+}
+
+#[test]
+fn test_submatrix_minor_cofactor() {
+    let mut mx2 = Matrix2::new();
+    mx2.m[0][0] = 1f64;
+    mx2.m[0][1] = 5f64;
+    mx2.m[1][0] = -3f64;
+    mx2.m[1][1] = 2f64;
+    assert_eq!(17f64, mx2.determinant());
+
+    let mut mx3 = Matrix3::new();
+    mx3.m[0][0] = 1f64;
+    mx3.m[0][1] = 5f64;
+    mx3.m[0][2] = 0f64;
+    mx3.m[1][0] = -3f64;
+    mx3.m[1][1] = 2f64;
+    mx3.m[1][2] = 7f64;
+    mx3.m[2][0] = 0f64;
+    mx3.m[2][1] = 6f64;
+    mx3.m[2][2] = -3f64;
+
+    println!("{:?}", mx3);
+    let mx2 = Matrix3::submatrix(mx3, 2, 2);
+    println!("+================");
+    println!("{:?}", mx2);
+
+    let mx4 = Matrix4::new(Some([
+        [-6f64, 1f64, 1f64, 6f64],
+        [-8f64, 5f64, 8f64, 6f64],
+        [-1f64, 0f64, 8f64, 2f64],
+        [-7f64, 1f64, -1f64, 1f64],
+    ]));
+    let mx3_new = mx4.submatrix(2, 1);
+    println!("{:?}", mx3_new);
+
+
+    let mut mx3_1 = Matrix3::new();
+    mx3_1.m[0][0] = 3f64;
+    mx3_1.m[0][1] = 5f64;
+    mx3_1.m[0][2] = 0f64;
+    mx3_1.m[1][0] = 2f64;
+    mx3_1.m[1][1] = -1f64;
+    mx3_1.m[1][2] = -7f64;
+    mx3_1.m[2][0] = 6f64;
+    mx3_1.m[2][1] = -1f64;
+    mx3_1.m[2][2] = 5f64;
+
+    println!("+================");
+    println!("+================");
+    println!("{:?}", mx3_1);
+    assert_eq!(mx3_1.minor(1, 0), 25f64);
+
+    println!("+================");
+    println!("+================");
+    println!("+================");
+    assert_eq!(mx3_1.minor(0, 0), mx3_1.cofactor(0, 0));
+    println!("minor: {}\ncofactor: {}", mx3_1.minor(0, 0), mx3_1.cofactor(0, 0));
+    assert_ne!(mx3_1.minor(1, 0), mx3_1.cofactor(1, 0));
+    println!("minor: {}\ncofactor: {}", mx3_1.minor(1, 0), mx3_1.cofactor(1, 0));
+}
+
+#[test]
+fn test_matrix_determinant(){
+    let mut mx3 = Matrix3::new();
+    mx3.m[0][0] = 1f64;
+    mx3.m[0][1] = 2f64;
+    mx3.m[0][2] = 6f64;
+    mx3.m[1][0] = -5f64;
+    mx3.m[1][1] = 8f64;
+    mx3.m[1][2] = -4f64;
+    mx3.m[2][0] = 2f64;
+    mx3.m[2][1] = 6f64;
+    mx3.m[2][2] = 4f64;
+
+    let mx4 = Matrix4::new(Some([
+[-2f64,-8f64,3f64,5f64],
+[-3f64,1f64,7f64,3f64],
+[1f64,2f64,-9f64,6f64],
+[-6f64,7f64,7f64,-9f64],
+    ]));
+
+    assert_eq!(mx3.determinant(), -196f64);
+
+    println!("+================");
+    println!("{}", mx4.cofactor(0, 0));
+    println!("{}", mx4.cofactor(0, 1));
+    println!("{}", mx4.cofactor(0, 2));
+    println!("{}", mx4.cofactor(0, 3));
+    assert_eq!(mx4.determinant(), -4071f64)
+} 
