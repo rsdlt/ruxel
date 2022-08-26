@@ -6,6 +6,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+#![allow(dead_code)]
+
 /// Provides Unit tests for Matrix4 types.
 #[cfg(test)]
 mod tests;
@@ -14,7 +16,11 @@ use std::cmp::{Eq, PartialEq};
 use std::fmt::Display;
 use std::ops::{Mul, MulAssign};
 
+// Bring Vector module constants into scope
 use super::vector::*;
+
+// Bring Geometry module constants into scope
+use super::EPSILON;
 
 /// Declaration for inner matrix data of size 4x4 and
 /// generic type
@@ -43,8 +49,6 @@ pub enum Matrix4Index {
     /// .
     Four,
 }
-
-use super::EPSILON;
 
 #[derive(Debug, Clone, Copy)]
 /// Definition of Matrix4
