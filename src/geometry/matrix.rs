@@ -93,9 +93,7 @@ impl PartialEq for Matrix4<f64> {
         !self.equal(other)
     }
 }
-impl Eq for Matrix4<f64>{
-}
-
+impl Eq for Matrix4<f64> {}
 
 /// Provides the capabilities to initialize a Matrix
 pub trait Matrix4Init<T> {
@@ -128,7 +126,7 @@ impl Matrix4Init<f64> for Matrix4<f64> {
                 flag = true;
             } else {
                 flag = false;
-                break
+                break;
             }
         }
         flag
