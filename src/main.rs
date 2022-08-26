@@ -19,10 +19,15 @@ Ruxel allows rendering and ray tracing of:
 
 */
 
-use geometry::vector::{
-    Axis,
-    Axis::{XY as xy, XYZ as xyz, XYZW as xyzw},
-    CoordInit, Point3, Vector3,
+#![allow(unused_imports)]
+
+use geometry::{
+    matrix::{Matrix4, Matrix4Init},
+    vector::{
+        Axis,
+        Axis::{XY as xy, XYZ as xyz, XYZW as xyzw},
+        CoordInit, Point3, Vector3,
+    },
 };
 
 use picture::colors::{ColorInit, ColorRgb};
@@ -38,4 +43,12 @@ The picture module implements the functionality for Canvas and Colors in order t
 pub mod picture;
 
 fn main() {
+    let m = Matrix4::identity();
+    println!("{}", m);
+
+    let m2 = Matrix4::identity();
+
+    if m.equal(&m2) {
+        println!("equal");
+    }
 }

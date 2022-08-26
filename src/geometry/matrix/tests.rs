@@ -10,4 +10,10 @@
 use super::*;
 
 #[test]
-fn first_matrix_test() {}
+fn test_proper_matrix_creation() {}
+
+#[test]
+fn test_matrix_equality() {}
+
+#[test]
+fn test_matrix_multiplication() {}

@@ -76,7 +76,7 @@ pub trait ColorInit<T> {
     /// .
     fn white() -> T;
     /// .
-    fn equal(self, other:&T) -> bool;
+    fn equal(self, other: &T) -> bool;
 }
 
 impl ColorInit<ColorRgb> for ColorRgb {
@@ -124,13 +124,15 @@ impl ColorInit<ColorRgb> for ColorRgb {
         }
     }
 
-    fn equal(self, other:&ColorRgb) -> bool {
-       if (self.r - other.r).abs() < EPSILON && (self.g - other.g).abs() < EPSILON && (self.b - other.b).abs() < EPSILON {
-           true
-       }
-       else{
-           false
-       }
+    fn equal(self, other: &ColorRgb) -> bool {
+        if (self.r - other.r).abs() < EPSILON
+            && (self.g - other.g).abs() < EPSILON
+            && (self.b - other.b).abs() < EPSILON
+        {
+            true
+        } else {
+            false
+        }
     }
 }
 

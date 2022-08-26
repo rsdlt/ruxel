@@ -188,7 +188,8 @@ fn vector_and_point_operator_overloading_integrity() {
     let p3 = Point3::new(xyz(2.55555, 7.88888, 9.34343));
     let p4 = Point3::new(xyz(2.55553, 7.88887, 9.34342));
     // Add two Vector3
-    assert_eq!(v1 + v2,
+    assert_eq!(
+        v1 + v2,
         Vector3 {
             x: 5.0,
             y: 11.0,

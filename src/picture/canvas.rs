@@ -99,7 +99,7 @@ impl Canvas {
 
     // Iterates over the Canvas.data[[]] vector and generates a
     /// PPM file with the proper format
-    pub fn write_to_ppm(&self, file_name:& Path) {
+    pub fn write_to_ppm(&self, file_name: &Path) {
         let mut image = OpenOptions::new()
             .write(true)
             .create(true)
@@ -111,7 +111,7 @@ impl Canvas {
                                              // per row. Max # chars per color = 12;
                                              // Max # colors per row = 70 / 12 = 5.8 -> 5
 
-        // Begin formatting the PPM file with the header 
+        // Begin formatting the PPM file with the header
         let mut image_file_content = format!("{}\n{} {}\n{}\n", "P3", self.width, self.height, 255);
 
         // Iterate over the Canvas.data[[]] vector
