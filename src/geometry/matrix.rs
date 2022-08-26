@@ -93,6 +93,9 @@ impl PartialEq for Matrix4<f64> {
         !self.equal(other)
     }
 }
+impl Eq for Matrix4<f64>{
+}
+
 
 /// Provides the capabilities to initialize a Matrix
 pub trait Matrix4Init<T> {
@@ -125,6 +128,7 @@ impl Matrix4Init<f64> for Matrix4<f64> {
                 flag = true;
             } else {
                 flag = false;
+                break
             }
         }
         flag
@@ -224,8 +228,8 @@ impl Mul for Matrix4<f64> {
 
     fn mul(self, rhs: Self) -> Self {
         let mut m_res = Matrix4::zero();
-        for row in 0..3 {
-            for col in 0..3 {
+        for row in 0..4 {
+            for col in 0..4 {
                 m_res.m[row][col] = self.m[row][0] * rhs.m[0][col]
                     + self.m[row][1] * rhs.m[1][col]
                     + self.m[row][2] * rhs.m[2][col]
@@ -238,8 +242,8 @@ impl Mul for Matrix4<f64> {
 
 impl MulAssign for Matrix4<f64> {
     fn mul_assign(&mut self, rhs: Self) {
-        for row in 0..3 {
-            for col in 0..3 {
+        for row in 0..4 {
+            for col in 0..4 {
                 self.m[row][col] = self.m[row][0] * rhs.m[0][col]
                     + self.m[row][1] * rhs.m[1][col]
                     + self.m[row][2] * rhs.m[2][col]
@@ -254,33 +258,33 @@ impl Mul<Vector3<f64>> for Matrix4<f64> {
 
     fn mul(self, rhs: Vector3<f64>) -> Vector3<f64> {
         let mut v_res = Vector3::zero();
-        for row in 0..3 {
+        for row in 0..4 {
             match row {
                 0 => {
                     v_res.x = self.m[row][0] * rhs.x
-                        + self.m[row][1] * rhs.x
-                        + self.m[row][2] * rhs.x
-                        + self.m[row][3] * rhs.x
+                        + self.m[row][1] * rhs.y
+                        + self.m[row][2] * rhs.z
+                        + self.m[row][3] * rhs.w;
                 }
                 1 => {
-                    v_res.y = self.m[row][0] * rhs.y
+                    v_res.y = self.m[row][0] * rhs.x
                         + self.m[row][1] * rhs.y
-                        + self.m[row][2] * rhs.y
-                        + self.m[row][3] * rhs.y
+                        + self.m[row][2] * rhs.z
+                        + self.m[row][3] * rhs.w;
                 }
                 2 => {
-                    v_res.z = self.m[row][0] * rhs.z
-                        + self.m[row][1] * rhs.z
+                    v_res.z = self.m[row][0] * rhs.x
+                        + self.m[row][1] * rhs.y
                         + self.m[row][2] * rhs.z
-                        + self.m[row][3] * rhs.z
+                        + self.m[row][3] * rhs.w;
                 }
                 3 => {
-                    v_res.w = self.m[row][0] * rhs.w
-                        + self.m[row][1] * rhs.w
-                        + self.m[row][2] * rhs.w
-                        + self.m[row][3] * rhs.w
+                    v_res.w = self.m[row][0] * rhs.x
+                        + self.m[row][1] * rhs.y
+                        + self.m[row][2] * rhs.z
+                        + self.m[row][3] * rhs.w;
                 }
-                _ => panic!("Something wild happened"),
+                _ => panic!("Something wild happened..."),
             }
         }
         v_res
@@ -292,30 +296,30 @@ impl Mul<Matrix4<f64>> for Vector3<f64> {
 
     fn mul(self, rhs: Matrix4<f64>) -> Vector3<f64> {
         let mut v_res = Vector3::zero();
-        for row in 0..3 {
+        for row in 0..4 {
             match row {
                 0 => {
                     v_res.x = rhs.m[row][0] * self.x
-                        + rhs.m[row][1] * self.x
-                        + rhs.m[row][2] * self.x
-                        + rhs.m[row][3] * self.x
+                        + rhs.m[row][1] * self.y
+                        + rhs.m[row][2] * self.z
+                        + rhs.m[row][3] * self.w
                 }
                 1 => {
-                    v_res.y = rhs.m[row][0] * self.y
+                    v_res.y = rhs.m[row][0] * self.x
                         + rhs.m[row][1] * self.y
-                        + rhs.m[row][2] * self.y
-                        + rhs.m[row][3] * self.y
+                        + rhs.m[row][2] * self.z
+                        + rhs.m[row][3] * self.w
                 }
                 2 => {
-                    v_res.z = rhs.m[row][0] * self.z
-                        + rhs.m[row][1] * self.z
+                    v_res.z = rhs.m[row][0] * self.x
+                        + rhs.m[row][1] * self.y
                         + rhs.m[row][2] * self.z
-                        + rhs.m[row][3] * self.z
+                        + rhs.m[row][3] * self.w
                 }
                 3 => {
-                    v_res.w = rhs.m[row][0] * self.w
-                        + rhs.m[row][1] * self.w
-                        + rhs.m[row][2] * self.w
+                    v_res.w = rhs.m[row][0] * self.x
+                        + rhs.m[row][1] * self.y
+                        + rhs.m[row][2] * self.z
                         + rhs.m[row][3] * self.w
                 }
                 _ => panic!("Something wild happened"),
