@@ -76,7 +76,7 @@ impl Display for Matrix4<f64> {
         for row in self.m {
             s.push_str(
                 &format!(
-                    "[{:^5.2}, {:^5.2}, {:^5.2}, {:^5.2}]\n",
+                    "[{:^5.5}, {:^5.5}, {:^5.5}, {:^5.5}]\n",
                     &row[0], &row[1], &row[2], &row[3]
                 )
                 .to_string(),
@@ -98,7 +98,6 @@ impl PartialEq for Matrix4<f64> {
 impl Eq for Matrix4<f64> {}
 
 impl Matrix4<f64> {
-
     pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix3<f64> {
         let mut res = Matrix3::new();
         let mut r_count = 0;
@@ -119,31 +118,30 @@ impl Matrix4<f64> {
         res
     }
 
-    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> f64{
+    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> f64 {
         self.submatrix(row_del, col_del).determinant()
     }
 
-    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> f64{
+    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> f64 {
         if (row_del + col_del) % 2 == 0 {
             self.minor(row_del, col_del)
-        }
-        else {
+        } else {
             -self.minor(row_del, col_del)
         }
     }
 
-    pub(crate) fn determinant(self) -> f64{
+    pub(crate) fn determinant(self) -> f64 {
         let mut det = 0f64;
-        for col in 0..4{
-           det = det + self.m[0][col] * self.cofactor(0, col);
-       } 
+        for col in 0..4 {
+            det = det + self.m[0][col] * self.cofactor(0, col);
+        }
         det
     }
-
 }
 
 /// Provides the capabilities to initialize a Matrix
 pub trait Matrix4Ops<T> {
+    /// .
     fn equal(&self, other: &Self) -> bool;
     /// Returns the row of the matrix based on an user-defined index
     fn get_row(&self, index: Matrix4Index) -> Matrix4Row<T>;
@@ -154,6 +152,8 @@ pub trait Matrix4Ops<T> {
     fn new(data: Option<Matrix4Data<T>>) -> Self;
     /// Returns a new identity matrix
     fn identity() -> Self;
+    /// Returns the inverse of a matrix
+    fn inverse(self) -> Self;
     /// Returns a new matrix filled with '1'
     fn one() -> Self;
     /// Transposes a Matrix
@@ -163,7 +163,6 @@ pub trait Matrix4Ops<T> {
 }
 
 impl Matrix4Ops<f64> for Matrix4<f64> {
-
     fn equal(&self, other: &Self) -> bool {
         let mut flag = true;
         for i in 0..4 {
@@ -261,12 +260,24 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         }
     }
 
-    fn one() -> Self {
-        Self { m: [[1.0; 4]; 4] }
+    fn inverse(self) -> Self {
+        if self.determinant() == 0.0 {
+            panic!("Matrix cannot be inversed");
+        } else {
+            let mut res = Matrix4::zero();
+            for row in 0..4 {
+                for col in 0..4 {
+                    let c = self.cofactor(row, col);
+                    // switches col for row to achieve transpose operation
+                    res.m[col][row] = c / self.determinant();
+                }
+            }
+            res
+        }
     }
 
-    fn zero() -> Self {
-        Self { m: [[0.0; 4]; 4] }
+    fn one() -> Self {
+        Self { m: [[1.0; 4]; 4] }
     }
 
     fn transpose(self) -> Self {
@@ -278,6 +289,10 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
             res.m[3][row] = self.m[row][3];
         }
         res
+    }
+
+    fn zero() -> Self {
+        Self { m: [[0.0; 4]; 4] }
     }
 }
 
@@ -421,25 +436,23 @@ impl Matrix3<f64> {
         res
     }
 
-    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> f64{
+    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> f64 {
         self.submatrix(row_del, col_del).determinant()
     }
 
-    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> f64{
+    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> f64 {
         if (row_del + col_del) % 2 == 0 {
             self.minor(row_del, col_del)
-        }
-        else {
+        } else {
             -self.minor(row_del, col_del)
         }
     }
 
-    pub(crate) fn determinant(self) -> f64{
+    pub(crate) fn determinant(self) -> f64 {
         let mut det = 0f64;
-        for col in 0..3{
-           det = det + self.m[0][col] * self.cofactor(0, col);
-       } 
+        for col in 0..3 {
+            det = det + self.m[0][col] * self.cofactor(0, col);
+        }
         det
     }
-
 }

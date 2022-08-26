@@ -153,7 +153,6 @@ fn test_submatrix_minor_cofactor() {
     let mx3_new = mx4.submatrix(2, 1);
     println!("{:?}", mx3_new);
 
-
     let mut mx3_1 = Matrix3::new();
     mx3_1.m[0][0] = 3f64;
     mx3_1.m[0][1] = 5f64;
@@ -174,13 +173,21 @@ fn test_submatrix_minor_cofactor() {
     println!("+================");
     println!("+================");
     assert_eq!(mx3_1.minor(0, 0), mx3_1.cofactor(0, 0));
-    println!("minor: {}\ncofactor: {}", mx3_1.minor(0, 0), mx3_1.cofactor(0, 0));
+    println!(
+        "minor: {}\ncofactor: {}",
+        mx3_1.minor(0, 0),
+        mx3_1.cofactor(0, 0)
+    );
     assert_ne!(mx3_1.minor(1, 0), mx3_1.cofactor(1, 0));
-    println!("minor: {}\ncofactor: {}", mx3_1.minor(1, 0), mx3_1.cofactor(1, 0));
+    println!(
+        "minor: {}\ncofactor: {}",
+        mx3_1.minor(1, 0),
+        mx3_1.cofactor(1, 0)
+    );
 }
 
 #[test]
-fn test_matrix_determinant(){
+fn test_matrix_determinant() {
     let mut mx3 = Matrix3::new();
     mx3.m[0][0] = 1f64;
     mx3.m[0][1] = 2f64;
@@ -193,10 +200,10 @@ fn test_matrix_determinant(){
     mx3.m[2][2] = 4f64;
 
     let mx4 = Matrix4::new(Some([
-[-2f64,-8f64,3f64,5f64],
-[-3f64,1f64,7f64,3f64],
-[1f64,2f64,-9f64,6f64],
-[-6f64,7f64,7f64,-9f64],
+        [-2f64, -8f64, 3f64, 5f64],
+        [-3f64, 1f64, 7f64, 3f64],
+        [1f64, 2f64, -9f64, 6f64],
+        [-6f64, 7f64, 7f64, -9f64],
     ]));
 
     assert_eq!(mx3.determinant(), -196f64);
@@ -207,4 +214,59 @@ fn test_matrix_determinant(){
     println!("{}", mx4.cofactor(0, 2));
     println!("{}", mx4.cofactor(0, 3));
     assert_eq!(mx4.determinant(), -4071f64)
-} 
+}
+
+#[test]
+fn test_matrix_inversion() {
+    let m1 = Matrix4::new(Some([
+        [6f64, 4f64, 4f64, 4f64],
+        [5f64, 5f64, 7f64, 6f64],
+        [4f64, -9f64, 3f64, -7f64],
+        [9f64, 1f64, 7f64, -6f64],
+    ]));
+
+    let m2 = Matrix4::new(Some([
+        [-4f64, 2f64, -2f64, -3f64],
+        [9f64, 6f64, 2f64, 6f64],
+        [0f64, -5f64, 1f64, -5f64],
+        [0f64, 0f64, 0f64, 0f64],
+    ]));
+
+    assert!(m1.determinant() == -2120f64);
+    assert!(m2.determinant() == 0f64);
+
+    let m3 = Matrix4::new(Some([
+        [8f64, -5f64, 9f64, 2f64],
+        [7f64, 5f64, 6f64, 1f64],
+        [-6f64, 0f64, 9f64, 6f64],
+        [-3f64, 0f64, -9f64, -4f64],
+    ]));
+
+    let m4 = Matrix4::new(Some([
+        [9f64, 3f64, 0f64, 9f64],
+        [-5f64, -2f64, -6f64, -3f64],
+        [-4f64, 9f64, 6f64, 4f64],
+        [-7f64, 6f64, 6f64, 2f64],
+    ]));
+
+    println!("inv(m3) =\n{}", m3.inverse());
+    println!("inv(m4) =\n{}", m4.inverse());
+
+    let ma = Matrix4::new(Some([
+        [3f64, -9f64, 7f64, 3f64],
+        [3f64, -8f64, 2f64, -9f64],
+        [-4f64, 4f64, 4f64, 1f64],
+        [-6f64, 5f64, 1f64, 1f64],
+    ]));
+
+    let mb = Matrix4::new(Some([
+        [8f64, 2f64, 2f64, 2f64],
+        [3f64, -1f64, 7f64, 0f64],
+        [7f64, 0f64, 5f64, 4f64],
+        [6f64, -2f64, 0f64, 5f64],
+    ]));
+
+    let mc = ma * mb;
+
+    assert_eq!(mc * mb.inverse(), ma)
+}
