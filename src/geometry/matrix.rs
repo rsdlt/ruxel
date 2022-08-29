@@ -70,6 +70,13 @@ pub(crate) struct Matrix2<T> {
     m: [[T; 2]; 2],
 }
 
+
+impl Default for Matrix4<f64>{
+    fn default() -> Self {
+        Self { m: Default::default() }
+    }
+}
+
 impl Display for Matrix4<f64> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut s = "".to_string();
@@ -139,25 +146,51 @@ impl Matrix4<f64> {
     }
 }
 
-/// Provides the capabilities to initialize a Matrix
+/// Provides the capabilities to initialize and transform a Matrix
 pub trait Matrix4Ops<T> {
     /// .
     fn equal(&self, other: &Self) -> bool;
+
     /// Returns the row of the matrix based on an user-defined index
     fn get_row(&self, index: Matrix4Index) -> Matrix4Row<T>;
+
     /// Returns the row of the matrix based on an user-defined index
     fn get_col(&self, index: Matrix4Index) -> Matrix4Col<T>;
+
     /// Returns the new matrix with the data provided by the user.
     /// If no data is provided the function returns the matrix zero
     fn new(data: Option<Matrix4Data<T>>) -> Self;
+
     /// Returns a new identity matrix
     fn identity() -> Self;
+
     /// Returns the inverse of a matrix
     fn inverse(self) -> Self;
+
     /// Returns a new matrix filled with '1'
     fn one() -> Self;
+
+    /// Returns rotation matrix around the X axis
+    fn rotate_x(radians: T) -> Self;
+
+    /// Returns rotation matrix around the Y axis
+    fn rotate_y(radians: T) -> Self;
+
+    /// Returns rotation matrix around the Z axis
+    fn rotate_z(radians: T) -> Self;
+
+    /// Returns the Scaling Matrix
+    fn scale(x: T, y: T, z: T) -> Self;
+
+    /// Returns the Shearing Matrix
+    fn shearing(xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Self; 
+    
     /// Transposes a Matrix
     fn transpose(self) -> Self;
+
+    /// Returns a translation Matrix
+    fn translation(x: T, y: T, z: T) -> Self;
+
     /// Returns a new matrix filled with '0'
     fn zero() -> Self;
 }
@@ -280,6 +313,41 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         Self { m: [[1.0; 4]; 4] }
     }
 
+    fn rotate_x(radians: f64) -> Self {
+        let mut res = Matrix4::identity();
+        res.m[1][1] = radians.cos();
+        res.m[1][2] = -radians.sin();
+        res.m[2][1] = radians.sin();
+        res.m[2][2] = radians.cos();
+        res
+    }
+
+    fn rotate_y(radians: f64) -> Self {
+        let mut res = Matrix4::identity();
+        res.m[0][0] = radians.cos();
+        res.m[0][2] = radians.sin();
+        res.m[2][0] = -radians.sin();
+        res.m[2][2] = radians.cos();
+        res
+    }
+
+    fn rotate_z(radians: f64) -> Self {
+        let mut res = Matrix4::identity();
+        res.m[0][0] = radians.cos();
+        res.m[0][1] = -radians.sin();
+        res.m[1][0] = radians.sin();
+        res.m[1][1] = radians.cos();
+        res
+    }
+
+    fn scale(x: f64, y: f64, z: f64) -> Self {
+        let mut res = Matrix4::identity();
+        res.m[0][0] = x;
+        res.m[1][1] = y;
+        res.m[2][2] = z;
+        res 
+    }
+
     fn transpose(self) -> Self {
         let mut res = Matrix4::zero();
         for row in 0..4 {
@@ -291,8 +359,27 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         res
     }
 
+    fn translation(x: f64, y: f64, z: f64) -> Self {
+        let mut res = Matrix4::identity();
+        res.m[0][3] = x;
+        res.m[1][3] = y;
+        res.m[2][3] = z;
+        res
+    }
+
     fn zero() -> Self {
         Self { m: [[0.0; 4]; 4] }
+    }
+
+    fn shearing(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Self {
+        let mut res = Matrix4::identity();
+        res.m[0][1] = xy;
+        res.m[0][2] = xz;
+        res.m[1][0] = yx;
+        res.m[1][2] = yz;
+        res.m[2][0] = zx;
+        res.m[2][1] = zy;
+        res
     }
 }
 
@@ -364,11 +451,87 @@ impl Mul<Vector3<f64>> for Matrix4<f64> {
     }
 }
 
+impl Mul<Point3<f64>> for Matrix4<f64> {
+    type Output = Point3<f64>;
+
+    fn mul(self, rhs: Point3<f64>) -> Point3<f64> {
+        let mut v_res = Point3::zero();
+        for row in 0..4 {
+            match row {
+                0 => {
+                    v_res.x = self.m[row][0] * rhs.x
+                        + self.m[row][1] * rhs.y
+                        + self.m[row][2] * rhs.z
+                        + self.m[row][3] * rhs.w;
+                }
+                1 => {
+                    v_res.y = self.m[row][0] * rhs.x
+                        + self.m[row][1] * rhs.y
+                        + self.m[row][2] * rhs.z
+                        + self.m[row][3] * rhs.w;
+                }
+                2 => {
+                    v_res.z = self.m[row][0] * rhs.x
+                        + self.m[row][1] * rhs.y
+                        + self.m[row][2] * rhs.z
+                        + self.m[row][3] * rhs.w;
+                }
+                3 => {
+                    v_res.w = self.m[row][0] * rhs.x
+                        + self.m[row][1] * rhs.y
+                        + self.m[row][2] * rhs.z
+                        + self.m[row][3] * rhs.w;
+                }
+                _ => panic!("Something wild happened..."),
+            }
+        }
+        v_res
+    }
+}
+
 impl Mul<Matrix4<f64>> for Vector3<f64> {
     type Output = Vector3<f64>;
 
     fn mul(self, rhs: Matrix4<f64>) -> Vector3<f64> {
         let mut v_res = Vector3::zero();
+        for row in 0..4 {
+            match row {
+                0 => {
+                    v_res.x = rhs.m[row][0] * self.x
+                        + rhs.m[row][1] * self.y
+                        + rhs.m[row][2] * self.z
+                        + rhs.m[row][3] * self.w
+                }
+                1 => {
+                    v_res.y = rhs.m[row][0] * self.x
+                        + rhs.m[row][1] * self.y
+                        + rhs.m[row][2] * self.z
+                        + rhs.m[row][3] * self.w
+                }
+                2 => {
+                    v_res.z = rhs.m[row][0] * self.x
+                        + rhs.m[row][1] * self.y
+                        + rhs.m[row][2] * self.z
+                        + rhs.m[row][3] * self.w
+                }
+                3 => {
+                    v_res.w = rhs.m[row][0] * self.x
+                        + rhs.m[row][1] * self.y
+                        + rhs.m[row][2] * self.z
+                        + rhs.m[row][3] * self.w
+                }
+                _ => panic!("Something wild happened"),
+            }
+        }
+        v_res
+    }
+}
+
+impl Mul<Matrix4<f64>> for Point3<f64> {
+    type Output = Point3<f64>;
+
+    fn mul(self, rhs: Matrix4<f64>) -> Point3<f64> {
+        let mut v_res = Point3::zero();
         for row in 0..4 {
             match row {
                 0 => {

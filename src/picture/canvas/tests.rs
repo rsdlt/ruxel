@@ -22,7 +22,6 @@ fn test_print_to_ppm() {
     canvas.write_pixel(Pixel::new(0, 0, c1));
     canvas.write_pixel(Pixel::new(2, 1, c2));
     canvas.write_pixel(Pixel::new(4, 2, c3));
-    // TODO: Need to manage path to /images directory
     canvas.write_to_ppm(&image_path);
 }
 #[test]

@@ -39,7 +39,7 @@ pub enum Axis<U> {
 
 /// Type representing a geometric 3D Vector in its 'homogeneous' form with x, y, z, w components,
 /// and where 'w' stands for 'weight'
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vector3<T> {
     /// Component on x axis
     pub x: T,
@@ -53,7 +53,7 @@ pub struct Vector3<T> {
 
 /// Type representing a geometric 3D Point in its 'homogeneous' form with x, y, z components, and
 /// where 'W' stands for 'weight'
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct Point3<T> {
     /// Component on x axis
     pub x: T,
@@ -107,7 +107,31 @@ impl Default for Vector3<f64> {
     }
 }
 
-// TODO:  Ord, PartialOrd, , Debug for Types
+impl PartialEq for Vector3<f64> {
+    fn eq(&self, other: &Self) -> bool {
+        self.equal(*other) 
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.equal(*other)
+    }
+}
+
+impl Eq for Vector3<f64>{
+}
+
+impl PartialEq for Point3<f64>{
+    fn eq(&self, other: &Self) -> bool {
+        self.equal(*other)
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.equal(*other)
+    }
+}
+
+impl Eq for Point3<f64>{
+}
 
 /// Trait allows Types with coordinates (x, y, etc.) to be efficiently initialized with common shorthand.
 pub trait CoordInit<T, U> {

@@ -10,7 +10,11 @@
 The geometry module implements the functionality for Points, Vectors, Matrices, and their transformations
 */
 
+/// Provides an epsilon to compare floating point numbers with suitable precision for this project
 pub const EPSILON: f64 = 0.0001;
+
+// Bring into scope the f64 math constants in the standard library
+use std::f64::consts::PI;
 
 /// Provides data structures, methods and traits for Matrix4 computations.
 pub mod matrix;
