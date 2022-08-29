@@ -9,7 +9,7 @@
 /// Unit testing for Vector3 and Point3 types
 use super::*;
 
-use super::Axis::XYZ as xyz;
+use super::Axis::{XYZ as xyz, XYZW as xyzw};
 
 #[test]
 // This test validates the construction of the Vector3 and Point3 types
@@ -226,11 +226,11 @@ fn vector_and_point_operator_overloading_integrity() {
     // Sub two Point3
     assert_eq!(p1 - p2, Vector3::new(xyz(-0.5, -3.5, -3.5)));
     // Div Point3 by scalar
-    assert!(Point3::new(xyz(1.25, 1.75, 2.25)).equal(p1 / 2.0));
+    assert_eq!(Point3::new(xyzw(1.25, 1.75, 2.25, 0.50)), (p1 / 2.0));
     // Mul Point3 by scalar
     assert!(p3.equal(Point3::new(xyz(2.55553, 7.88887, 9.34342))));
     // Neg Point3
-    assert_eq!(-p1, Point3::new(xyz(-2.5, -3.5, -4.5)));
+    assert_eq!(-p1, Point3::new(xyzw(-2.5, -3.5, -4.5, -1.0)));
     // AddAssign Vector3 and AddAssign Point3
     let mut vx = Vector3::zero();
     vx += v1;

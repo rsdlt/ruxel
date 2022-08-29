@@ -13,7 +13,9 @@ use super::Axis::{XYZ as xyz, XYZW as xyzw};
 use super::*;
 
 #[test]
-fn test_proper_matrix_creation() {
+fn test_matrix_creation() {
+    println!("{}", Matrix4::ZERO);
+
     let m_one = Matrix4::one();
     println!("{}", m_one);
     let m_zero = Matrix4::zero();
@@ -111,7 +113,7 @@ fn test_matrix_multiplication() {
 
 #[test]
 fn test_matrix_transpose() {
-    let m1 = Matrix4::new(Some([
+    let mut m1 = Matrix4::new(Some([
         [0f64, 9f64, 3f64, 0f64],
         [9f64, 8f64, 0f64, 8f64],
         [1f64, 8f64, 5f64, 3f64],
@@ -278,35 +280,39 @@ fn test_matrix_inversion() {
 fn test_matrix_transformations(){
 
     // Translations
-    
+    let mut m = Matrix4::identity(); 
     let p = Point3::new(xyz(-3.0, 4.0, 5.0));
-    let pt = p * Matrix4::translation(5.0, -3.0, 2.0);
+    let pt = p * m.translate(5.0, -3.0, 2.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 1.0, 7.0)));
 
     let p = Point3::new(xyz(-3.0, 4.0, 5.0));
-    let pt = p *  Matrix4::translation(5.0, -3.0, 2.0).inverse();
+    let pt = p *  Matrix4::identity().translate(5.0, -3.0, 2.0).inverse();
     assert_eq!(pt, Point3::new(xyz(-8.0, 7.0, 3.0)));
 
     let v = Vector3::new(xyz(-3.0, 4.0, 5.0));
-    assert_eq!(v, v * Matrix4::translation(5.0, -3.0, 2.0));
+    assert_eq!(v, v * Matrix4::identity().translate(5.0, -3.0, 2.0));
     
 
     // Scaling
+    let mut  m = Matrix4::identity(); 
     let p = Point3::new(xyz(-4.0, 6.0, 8.0));
-    let pt = p *  Matrix4::scale(2.0, 3.0, 4.0);
+    let pt = p *  m.scale(2.0, 3.0, 4.0);
     assert_eq!(pt, Point3::new(xyz(-8.0, 18.0, 32.0)));
 
+    let mut  m = Matrix4::identity(); 
     let v = Vector3::new(xyz(-4.0, 6.0, 8.0));
-    let vt = v *  Matrix4::scale(2.0, 3.0, 4.0);
+    let vt = v *  m.scale(2.0, 3.0, 4.0);
     assert_eq!(vt, Vector3::new(xyz(-8.0, 18.0, 32.0)));
 
+    let mut  m = Matrix4::identity(); 
     let v = Vector3::new(xyz(-4.0, 6.0, 8.0));
-    let vt = v *  Matrix4::scale(2.0, 3.0, 4.0).inverse();
+    let vt = v *  m.scale(2.0, 3.0, 4.0).inverse();
     assert_eq!(vt, Vector3::new(xyz(-2.0, 2.0, 2.0)));
 
     // Test the reflection by scaling with a negative axis
+    let mut m = Matrix4::identity(); 
     let p = Point3::new(xyz(2.0, 3.0, 4.0));
-    let pt = p *  Matrix4::scale(-1.0, 1.0, 1.0);
+    let pt = p *  m.scale(-1.0, 1.0, 1.0);
     assert_eq!(pt, Point3::new(xyz(-2.0, 3.0, 4.0)));
     
 
@@ -314,45 +320,74 @@ fn test_matrix_transformations(){
 
     // Rotate around x
     let p = Point3::up();
-    let hq = p * Matrix4::rotate_x(PI/4.0);
-    let fq = p * Matrix4::rotate_x(PI/2.0);
+    let mut m = Matrix4::identity(); 
+    let hq = p * m.rotate_x(PI/4.0);
+    let mut m = Matrix4::identity(); 
+    let fq = p * m.rotate_x(PI/2.0);
     assert_eq!(hq, Point3::new(xyz(0.0, 2f64.sqrt() / 2.0, 2f64.sqrt() / 2.0 )));
     assert_eq!(fq, Point3::forward());
 
     // Rotate around y
     let p = Point3::forward();
-    let hq = p * Matrix4::rotate_y(PI/4.0);
-    let fq = p * Matrix4::rotate_y(PI/2.0);
+    let mut m = Matrix4::identity(); 
+    let hq = p * m.rotate_y(PI/4.0);
+    let mut m = Matrix4::identity(); 
+    let fq = p * m.rotate_y(PI/2.0);
     assert_eq!(hq, Point3::new(xyz(2f64.sqrt() / 2.0, 0.0, 2f64.sqrt() / 2.0 )));
     assert_eq!(fq, Point3::right());
 
     // Rotate around z
     let p = Point3::up();
-    let hq = p * Matrix4::rotate_z(PI/4.0);
-    let fq = p * Matrix4::rotate_z(PI/2.0);
+    let mut  m = Matrix4::identity(); 
+    let hq = p * m.rotate_z(PI/4.0);
+    let mut m = Matrix4::identity(); 
+    let fq = p * m.rotate_z(PI/2.0);
     assert_eq!(hq, Point3::new(xyz(-2f64.sqrt() / 2.0, 2f64.sqrt() / 2.0, 0.0 )));
     assert_eq!(fq, Point3::left());
 
     // Shearing 
     let p = Point3::new(xyz(2.0, 3.0, 4.0));
     
-    let pt = p * Matrix4::shearing(1.0, 0.0,0.0,0.0,0.0,0.0);
+    let mut m = Matrix4::identity(); 
+    let pt = p * m.shear(1.0, 0.0,0.0,0.0,0.0,0.0);
     assert_eq!(pt, Point3::new(xyz(5.0, 3.0, 4.0)));
 
-    let pt = p * Matrix4::shearing(0.0, 0.0,1.0,0.0,0.0,0.0);
+    let mut m = Matrix4::identity(); 
+    let pt = p * m.shear(0.0, 0.0,1.0,0.0,0.0,0.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 5.0, 4.0)));
 
-    let pt = p * Matrix4::shearing(0.0, 0.0,0.0,1.0,0.0,0.0);
+    let mut m = Matrix4::identity(); 
+    let pt = p * m.shear(0.0, 0.0,0.0,1.0,0.0,0.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 7.0, 4.0)));
     
-    let pt = p * Matrix4::shearing(0.0, 0.0,0.0,0.0,1.0,0.0);
+    let mut m = Matrix4::identity(); 
+    let pt = p * m.shear(0.0, 0.0,0.0,0.0,1.0,0.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 3.0, 6.0)));
     
-    let pt = p * Matrix4::shearing(0.0, 0.0,0.0,0.0,0.0,1.0);
+    let mut m = Matrix4::identity(); 
+    let pt = p * m.shear(0.0, 0.0,0.0,0.0,0.0,1.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 3.0, 7.0)));
 
 
     // Chaining transformations
-    let p = Point3::new(xyz(1.0, 0.0, 1.0)) ;
-    // TODO: 
+    let mut p = Point3::new(xyz(1.0, 0.0, 1.0)) ;
+    let mut m = Matrix4::identity();
+
+    p = p * m.rotate_x(PI / 2.0);
+    println!("{}", p);
+
+    let mut m = Matrix4::identity();
+    p = p * m.scale(5.0, 5.0, 5.0);
+    println!("{}", p);
+
+    let mut m = Matrix4::identity();
+    p = p * m.translate(10.0, 5.0, 7.0);
+    println!("{}", p);
+
+    let mut p1 = Point3::new(xyz(1.0, 0.0, 1.0)) ;
+    let mut m = Matrix4::identity();
+    p1 = p1 * m.rotate_x(PI / 2.0).scale(5.0, 5.0, 5.0).translate(10., 5.0, 7.0);
+    println!("{}",p1);
+
+    assert_eq!(p1, Point3::new(xyz(15.0, 0.0, 7.0)));
 }

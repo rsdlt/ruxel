@@ -68,7 +68,7 @@ pub struct Point3<T> {
 impl Display for Vector3<f64> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = format!(
-            "v: [{:^5.2},{:^5.2},{:^5.2},{:^5.2}]",
+            "v: [{:^8.2},{:^8.2},{:^8.2},{:^8.2}]",
             self.x, self.y, self.z, self.w
         );
         f.write_str(&s)
@@ -78,7 +78,7 @@ impl Display for Vector3<f64> {
 impl Display for Point3<f64> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = format!(
-            "p: [{:^5.2},{:^5.2},{:^5.2},{:^5.2}]",
+            "p: [{:^8.2},{:^8.2},{:^8.2},{:^8.2}]",
             self.x, self.y, self.z, self.w
         );
         f.write_str(&s)
@@ -434,7 +434,7 @@ impl CoordInit<Point3<f64>, f64> for Point3<f64> {
                 w: 1.0,
             },
             Axis::XYZ(x, y, z) => Point3 { x, y, z, w: 1.0 },
-            Axis::XYZW(x, y, z, _w) => Point3 { x, y, z, w: 1.0 },
+            Axis::XYZW(x, y, z, w) => Point3 { x, y, z, w },
         }
     }
 }

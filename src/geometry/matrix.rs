@@ -83,7 +83,7 @@ impl Display for Matrix4<f64> {
         for row in self.m {
             s.push_str(
                 &format!(
-                    "[{:^5.5}, {:^5.5}, {:^5.5}, {:^5.5}]\n",
+                    "[{:^8.5}, {:^8.5}, {:^8.5}, {:^8.5}]\n",
                     &row[0], &row[1], &row[2], &row[3]
                 )
                 .to_string(),
@@ -105,6 +105,40 @@ impl PartialEq for Matrix4<f64> {
 impl Eq for Matrix4<f64> {}
 
 impl Matrix4<f64> {
+    const ZERO: Matrix4<f64> = Matrix4{
+         // m: [[0.0; 4]; 4]
+         m: 
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+        
+    };
+
+    const ONE: Matrix4<f64> = Matrix4 {
+         m: 
+            [
+                [1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0],
+            ],
+        
+    };
+
+    const IDENTITY: Matrix4<f64> = Matrix4 {
+         m: 
+            [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        
+    };
+
     pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix3<f64> {
         let mut res = Matrix3::new();
         let mut r_count = 0;
@@ -148,6 +182,7 @@ impl Matrix4<f64> {
 
 /// Provides the capabilities to initialize and transform a Matrix
 pub trait Matrix4Ops<T> {
+    
     /// .
     fn equal(&self, other: &Self) -> bool;
 
@@ -171,25 +206,25 @@ pub trait Matrix4Ops<T> {
     fn one() -> Self;
 
     /// Returns rotation matrix around the X axis
-    fn rotate_x(radians: T) -> Self;
+    fn rotate_x(&mut self, radians: T) -> Self;
 
     /// Returns rotation matrix around the Y axis
-    fn rotate_y(radians: T) -> Self;
+    fn rotate_y(&mut self, radians: T) -> Self;
 
     /// Returns rotation matrix around the Z axis
-    fn rotate_z(radians: T) -> Self;
+    fn rotate_z(&mut self, radians: T) -> Self;
 
     /// Returns the Scaling Matrix
-    fn scale(x: T, y: T, z: T) -> Self;
+    fn scale(&mut self, x: T, y: T, z: T) -> Self;
 
     /// Returns the Shearing Matrix
-    fn shearing(xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Self; 
+    fn shear(&mut self, xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Self; 
     
     /// Transposes a Matrix
-    fn transpose(self) -> Self;
+    fn transpose(&mut self) -> Self;
 
     /// Returns a translation Matrix
-    fn translation(x: T, y: T, z: T) -> Self;
+    fn translate(&mut self, x: T, y: T, z: T)  -> Self ;
 
     /// Returns a new matrix filled with '0'
     fn zero() -> Self;
@@ -313,73 +348,80 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         Self { m: [[1.0; 4]; 4] }
     }
 
-    fn rotate_x(radians: f64) -> Self {
-        let mut res = Matrix4::identity();
+    fn rotate_x(& mut self, radians: f64) -> Self {
+        let mut res = Matrix4::IDENTITY; 
         res.m[1][1] = radians.cos();
         res.m[1][2] = -radians.sin();
         res.m[2][1] = radians.sin();
         res.m[2][2] = radians.cos();
-        res
+        *self = res * *self;
+        *self
     }
 
-    fn rotate_y(radians: f64) -> Self {
-        let mut res = Matrix4::identity();
+    fn rotate_y(&mut self, radians: f64) -> Self { 
+        let mut res = Matrix4::IDENTITY; 
         res.m[0][0] = radians.cos();
         res.m[0][2] = radians.sin();
         res.m[2][0] = -radians.sin();
         res.m[2][2] = radians.cos();
-        res
+        *self = res * *self;
+        *self
     }
 
-    fn rotate_z(radians: f64) -> Self {
-        let mut res = Matrix4::identity();
+    fn rotate_z(& mut self, radians: f64) -> Self {
+        let mut res = Matrix4::IDENTITY; 
         res.m[0][0] = radians.cos();
         res.m[0][1] = -radians.sin();
         res.m[1][0] = radians.sin();
         res.m[1][1] = radians.cos();
-        res
+        *self = res * *self;
+        *self
     }
 
-    fn scale(x: f64, y: f64, z: f64) -> Self {
-        let mut res = Matrix4::identity();
+    fn scale(&mut self, x: f64, y: f64, z: f64) -> Self {
+        let mut res = Matrix4::IDENTITY; 
         res.m[0][0] = x;
         res.m[1][1] = y;
         res.m[2][2] = z;
-        res 
+        *self = res * *self ;
+        *self
     }
 
-    fn transpose(self) -> Self {
-        let mut res = Matrix4::zero();
-        for row in 0..4 {
-            res.m[0][row] = self.m[row][0];
-            res.m[1][row] = self.m[row][1];
-            res.m[2][row] = self.m[row][2];
-            res.m[3][row] = self.m[row][3];
-        }
-        res
-    }
-
-    fn translation(x: f64, y: f64, z: f64) -> Self {
-        let mut res = Matrix4::identity();
-        res.m[0][3] = x;
-        res.m[1][3] = y;
-        res.m[2][3] = z;
-        res
-    }
-
-    fn zero() -> Self {
-        Self { m: [[0.0; 4]; 4] }
-    }
-
-    fn shearing(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Self {
-        let mut res = Matrix4::identity();
+    fn shear(&mut self, xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Self {
+        let mut res = Matrix4::IDENTITY; 
         res.m[0][1] = xy;
         res.m[0][2] = xz;
         res.m[1][0] = yx;
         res.m[1][2] = yz;
         res.m[2][0] = zx;
         res.m[2][1] = zy;
-        res
+        *self = res * *self;
+        *self
+    }
+
+    fn transpose(&mut self) -> Self {
+        let mut res = Matrix4::ZERO;
+        for row in 0..4 {
+            res.m[0][row] = self.m[row][0];
+            res.m[1][row] = self.m[row][1];
+            res.m[2][row] = self.m[row][2];
+            res.m[3][row] = self.m[row][3];
+        }
+        *self = res * *self;
+        *self
+    }
+
+    fn translate(&mut self, x: f64, y: f64, z: f64) -> Self {
+        let mut res = Matrix4::IDENTITY; 
+        res.m[0][3] = x;
+        res.m[1][3] = y;
+        res.m[2][3] = z;
+        *self = res * *self ;
+        *self
+    }
+
+    fn zero() -> Self {
+        Self { m: [[0.0; 4]; 4] }
     }
 }
 
