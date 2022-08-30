@@ -7,6 +7,11 @@
 // except according to those terms.
 
 use std::f64::consts::PI;
+use std::path::Path;
+use std::usize;
+
+use crate::picture::canvas::{Canvas, Pixel};
+use crate::picture::colors::{ColorRgb, ColorInit};
 
 use super::Axis::{XYZ as xyz, XYZW as xyzw};
 /// Unit tests for Matrix4 types.
@@ -390,4 +395,37 @@ fn test_matrix_transformations(){
     println!("{}",p1);
 
     assert_eq!(p1, Point3::new(xyz(15.0, 0.0, 7.0)));
+}
+
+#[test]
+fn matrix_clock_exercise() {
+    let pix = Point3::new(xyz(0.0, 0.0, 1.0));
+    let hr =  PI / 6.0;
+    let mut m = Matrix4::identity();
+    
+    println!("{}", pix * 100.0);
+    for _i in 1..12 {
+        println!("{}", pix * m.rotate_y(1.0 * hr) * 100.0) ;
+    }
+
+    let mut can = Canvas::new(200, 200);
+    let mut mc = Matrix4::identity();
+    let mut pixel = Pixel::new(0, 0, ColorRgb::green());
+    let pix = Point3::new(xyz(0.0, 0.0, 1.0));
+    let image_path = Path::new("images/test_clock.ppm");
+    
+    let tpix = pix * mc.rotate_y(1.0  * hr).scale(75.0, 75.0, 75.0).translate(100.0, 0.0, 100.0);
+    pixel.x = tpix.x as usize;
+    pixel.y = tpix.z as usize;
+    can.write_pixel(pixel);
+    for i in 1..=12 {
+        let tpix = pix * mc.rotate_y(i as f64  * hr).scale(75.0, 75.0, 75.0).translate(100.0, 0.0, 100.0);
+        pixel.x = tpix.x as usize;
+        pixel.y = tpix.z as usize;
+        println!("px:{}, py:{}, tpx:{}, tpy{}", pixel.x, pixel.y, tpix.x, tpix.z);
+        can.write_pixel(pixel);
+        mc = Matrix4::identity(); 
+    }
+    can.write_to_ppm(&image_path);
+    
 }

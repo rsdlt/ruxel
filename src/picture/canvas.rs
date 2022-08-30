@@ -24,22 +24,22 @@ mod tests;
 #[derive(Debug, Copy, Clone)]
 pub struct Pixel {
     /// .
-    x: usize,
+    pub(crate) x: usize,
     /// .
-    y: usize,
+    pub(crate) y: usize,
     /// .
-    color: ColorRgb,
+    pub(crate) color: ColorRgb,
 }
 
 #[derive(Debug)]
 /// .
 pub struct Canvas {
     /// .
-    width: usize,
+    pub width: usize,
     /// .
-    height: usize,
+    pub height: usize,
     /// .
-    data: Vec<Vec<ColorRgb>>,
+    pub data: Vec<Vec<ColorRgb>>,
 }
 
 impl Pixel {
