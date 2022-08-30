@@ -11,12 +11,13 @@ use std::path::Path;
 use std::usize;
 
 use crate::picture::canvas::{Canvas, Pixel};
-use crate::picture::colors::{ColorRgb, ColorInit};
+use crate::picture::colors::{ColorInit, ColorRgb};
 
 use super::Axis::{XYZ as xyz, XYZW as xyzw};
-/// Unit tests for Matrix4 types.
 use super::*;
 
+
+/// Unit tests for Matrix4 types.
 #[test]
 fn test_matrix_creation() {
     println!("{}", Matrix4::ZERO);
@@ -282,100 +283,105 @@ fn test_matrix_inversion() {
 
 #[test]
 // Test the different matrix transformations and chaining of transformations
-fn test_matrix_transformations(){
-
+fn test_matrix_transformations() {
     // Translations
-    let mut m = Matrix4::identity(); 
+    let mut m = Matrix4::identity();
     let p = Point3::new(xyz(-3.0, 4.0, 5.0));
     let pt = p * m.translate(5.0, -3.0, 2.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 1.0, 7.0)));
 
     let p = Point3::new(xyz(-3.0, 4.0, 5.0));
-    let pt = p *  Matrix4::identity().translate(5.0, -3.0, 2.0).inverse();
+    let pt = p * Matrix4::identity().translate(5.0, -3.0, 2.0).inverse();
     assert_eq!(pt, Point3::new(xyz(-8.0, 7.0, 3.0)));
 
     let v = Vector3::new(xyz(-3.0, 4.0, 5.0));
     assert_eq!(v, v * Matrix4::identity().translate(5.0, -3.0, 2.0));
-    
 
     // Scaling
-    let mut  m = Matrix4::identity(); 
+    let mut m = Matrix4::identity();
     let p = Point3::new(xyz(-4.0, 6.0, 8.0));
-    let pt = p *  m.scale(2.0, 3.0, 4.0);
+    let pt = p * m.scale(2.0, 3.0, 4.0);
     assert_eq!(pt, Point3::new(xyz(-8.0, 18.0, 32.0)));
 
-    let mut  m = Matrix4::identity(); 
+    let mut m = Matrix4::identity();
     let v = Vector3::new(xyz(-4.0, 6.0, 8.0));
-    let vt = v *  m.scale(2.0, 3.0, 4.0);
+    let vt = v * m.scale(2.0, 3.0, 4.0);
     assert_eq!(vt, Vector3::new(xyz(-8.0, 18.0, 32.0)));
 
-    let mut  m = Matrix4::identity(); 
+    let mut m = Matrix4::identity();
     let v = Vector3::new(xyz(-4.0, 6.0, 8.0));
-    let vt = v *  m.scale(2.0, 3.0, 4.0).inverse();
+    let vt = v * m.scale(2.0, 3.0, 4.0).inverse();
     assert_eq!(vt, Vector3::new(xyz(-2.0, 2.0, 2.0)));
 
     // Test the reflection by scaling with a negative axis
-    let mut m = Matrix4::identity(); 
+    let mut m = Matrix4::identity();
     let p = Point3::new(xyz(2.0, 3.0, 4.0));
-    let pt = p *  m.scale(-1.0, 1.0, 1.0);
+    let pt = p * m.scale(-1.0, 1.0, 1.0);
     assert_eq!(pt, Point3::new(xyz(-2.0, 3.0, 4.0)));
-    
 
     // Rotation
 
     // Rotate around x
     let p = Point3::up();
-    let mut m = Matrix4::identity(); 
-    let hq = p * m.rotate_x(PI/4.0);
-    let mut m = Matrix4::identity(); 
-    let fq = p * m.rotate_x(PI/2.0);
-    assert_eq!(hq, Point3::new(xyz(0.0, 2f64.sqrt() / 2.0, 2f64.sqrt() / 2.0 )));
+    let mut m = Matrix4::identity();
+    let hq = p * m.rotate_x(PI / 4.0);
+    let mut m = Matrix4::identity();
+    let fq = p * m.rotate_x(PI / 2.0);
+    assert_eq!(
+        hq,
+        Point3::new(xyz(0.0, 2f64.sqrt() / 2.0, 2f64.sqrt() / 2.0))
+    );
     assert_eq!(fq, Point3::forward());
 
     // Rotate around y
     let p = Point3::forward();
-    let mut m = Matrix4::identity(); 
-    let hq = p * m.rotate_y(PI/4.0);
-    let mut m = Matrix4::identity(); 
-    let fq = p * m.rotate_y(PI/2.0);
-    assert_eq!(hq, Point3::new(xyz(2f64.sqrt() / 2.0, 0.0, 2f64.sqrt() / 2.0 )));
+    let mut m = Matrix4::identity();
+    let hq = p * m.rotate_y(PI / 4.0);
+    let mut m = Matrix4::identity();
+    let fq = p * m.rotate_y(PI / 2.0);
+    assert_eq!(
+        hq,
+        Point3::new(xyz(2f64.sqrt() / 2.0, 0.0, 2f64.sqrt() / 2.0))
+    );
     assert_eq!(fq, Point3::right());
 
     // Rotate around z
     let p = Point3::up();
-    let mut  m = Matrix4::identity(); 
-    let hq = p * m.rotate_z(PI/4.0);
-    let mut m = Matrix4::identity(); 
-    let fq = p * m.rotate_z(PI/2.0);
-    assert_eq!(hq, Point3::new(xyz(-2f64.sqrt() / 2.0, 2f64.sqrt() / 2.0, 0.0 )));
+    let mut m = Matrix4::identity();
+    let hq = p * m.rotate_z(PI / 4.0);
+    let mut m = Matrix4::identity();
+    let fq = p * m.rotate_z(PI / 2.0);
+    assert_eq!(
+        hq,
+        Point3::new(xyz(-2f64.sqrt() / 2.0, 2f64.sqrt() / 2.0, 0.0))
+    );
     assert_eq!(fq, Point3::left());
 
-    // Shearing 
+    // Shearing
     let p = Point3::new(xyz(2.0, 3.0, 4.0));
-    
-    let mut m = Matrix4::identity(); 
-    let pt = p * m.shear(1.0, 0.0,0.0,0.0,0.0,0.0);
+
+    let mut m = Matrix4::identity();
+    let pt = p * m.shear(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     assert_eq!(pt, Point3::new(xyz(5.0, 3.0, 4.0)));
 
-    let mut m = Matrix4::identity(); 
-    let pt = p * m.shear(0.0, 0.0,1.0,0.0,0.0,0.0);
+    let mut m = Matrix4::identity();
+    let pt = p * m.shear(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 5.0, 4.0)));
 
-    let mut m = Matrix4::identity(); 
-    let pt = p * m.shear(0.0, 0.0,0.0,1.0,0.0,0.0);
+    let mut m = Matrix4::identity();
+    let pt = p * m.shear(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 7.0, 4.0)));
-    
-    let mut m = Matrix4::identity(); 
-    let pt = p * m.shear(0.0, 0.0,0.0,0.0,1.0,0.0);
+
+    let mut m = Matrix4::identity();
+    let pt = p * m.shear(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 3.0, 6.0)));
-    
-    let mut m = Matrix4::identity(); 
-    let pt = p * m.shear(0.0, 0.0,0.0,0.0,0.0,1.0);
+
+    let mut m = Matrix4::identity();
+    let pt = p * m.shear(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
     assert_eq!(pt, Point3::new(xyz(2.0, 3.0, 7.0)));
 
-
     // Chaining transformations
-    let mut p = Point3::new(xyz(1.0, 0.0, 1.0)) ;
+    let mut p = Point3::new(xyz(1.0, 0.0, 1.0));
     let mut m = Matrix4::identity();
 
     p = p * m.rotate_x(PI / 2.0);
@@ -389,10 +395,13 @@ fn test_matrix_transformations(){
     p = p * m.translate(10.0, 5.0, 7.0);
     println!("{}", p);
 
-    let mut p1 = Point3::new(xyz(1.0, 0.0, 1.0)) ;
+    let mut p1 = Point3::new(xyz(1.0, 0.0, 1.0));
     let mut m = Matrix4::identity();
-    p1 = p1 * m.rotate_x(PI / 2.0).scale(5.0, 5.0, 5.0).translate(10., 5.0, 7.0);
-    println!("{}",p1);
+    p1 = p1
+        * m.rotate_x(PI / 2.0)
+            .scale(5.0, 5.0, 5.0)
+            .translate(10., 5.0, 7.0);
+    println!("{}", p1);
 
     assert_eq!(p1, Point3::new(xyz(15.0, 0.0, 7.0)));
 }
@@ -400,12 +409,12 @@ fn test_matrix_transformations(){
 #[test]
 fn matrix_clock_exercise() {
     let pix = Point3::new(xyz(0.0, 0.0, 1.0));
-    let hr =  PI / 6.0;
+    let hr = PI / 6.0;
     let mut m = Matrix4::identity();
-    
+
     println!("{}", pix * 100.0);
     for _i in 1..12 {
-        println!("{}", pix * m.rotate_y(1.0 * hr) * 100.0) ;
+        println!("{}", pix * m.rotate_y(1.0 * hr) * 100.0);
     }
 
     let mut can = Canvas::new(200, 200);
@@ -413,19 +422,27 @@ fn matrix_clock_exercise() {
     let mut pixel = Pixel::new(0, 0, ColorRgb::green());
     let pix = Point3::new(xyz(0.0, 0.0, 1.0));
     let image_path = Path::new("images/test_clock.ppm");
-    
-    let tpix = pix * mc.rotate_y(1.0  * hr).scale(75.0, 75.0, 75.0).translate(100.0, 0.0, 100.0);
+
+    let tpix = pix
+        * mc.rotate_y(1.0 * hr)
+            .scale(75.0, 75.0, 75.0)
+            .translate(100.0, 0.0, 100.0);
     pixel.x = tpix.x as usize;
     pixel.y = tpix.z as usize;
     can.write_pixel(pixel);
     for i in 1..=12 {
-        let tpix = pix * mc.rotate_y(i as f64  * hr).scale(75.0, 75.0, 75.0).translate(100.0, 0.0, 100.0);
+        let tpix = pix
+            * mc.rotate_y(i as f64 * hr)
+                .scale(75.0, 75.0, 75.0)
+                .translate(100.0, 0.0, 100.0);
         pixel.x = tpix.x as usize;
         pixel.y = tpix.z as usize;
-        println!("px:{}, py:{}, tpx:{}, tpy{}", pixel.x, pixel.y, tpix.x, tpix.z);
+        println!(
+            "px:{}, py:{}, tpx:{}, tpy{}",
+            pixel.x, pixel.y, tpix.x, tpix.z
+        );
         can.write_pixel(pixel);
-        mc = Matrix4::identity(); 
+        mc.to_identity();
     }
     can.write_to_ppm(&image_path);
-    
 }

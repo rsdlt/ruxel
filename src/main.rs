@@ -28,6 +28,7 @@ use geometry::{
         Axis::{XY as xy, XYZ as xyz, XYZW as xyzw},
         CoordInit, Point3, Vector3,
     },
+    ray::{Ray},
 };
 
 use picture::colors::{ColorInit, ColorRgb};
@@ -42,4 +43,5 @@ The picture module implements the functionality for Canvas and Colors in order t
 */
 pub mod picture;
 
-fn main() {}
+fn main() {
+}

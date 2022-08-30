@@ -70,10 +70,11 @@ pub(crate) struct Matrix2<T> {
     m: [[T; 2]; 2],
 }
 
-
-impl Default for Matrix4<f64>{
+impl Default for Matrix4<f64> {
     fn default() -> Self {
-        Self { m: Default::default() }
+        Self {
+            m: Default::default(),
+        }
     }
 }
 
@@ -105,38 +106,32 @@ impl PartialEq for Matrix4<f64> {
 impl Eq for Matrix4<f64> {}
 
 impl Matrix4<f64> {
-    const ZERO: Matrix4<f64> = Matrix4{
-         // m: [[0.0; 4]; 4]
-         m: 
-            [
-                [0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0],
-            ],
-        
+    const ZERO: Matrix4<f64> = Matrix4 {
+        // m: [[0.0; 4]; 4]
+        m: [
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+        ],
     };
 
     const ONE: Matrix4<f64> = Matrix4 {
-         m: 
-            [
-                [1.0, 1.0, 1.0, 1.0],
-                [1.0, 1.0, 1.0, 1.0],
-                [1.0, 1.0, 1.0, 1.0],
-                [1.0, 1.0, 1.0, 1.0],
-            ],
-        
+        m: [
+            [1.0, 1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0],
+        ],
     };
 
     const IDENTITY: Matrix4<f64> = Matrix4 {
-         m: 
-            [
-                [1.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0],
-            ],
-        
+        m: [
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ],
     };
 
     pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix3<f64> {
@@ -182,7 +177,6 @@ impl Matrix4<f64> {
 
 /// Provides the capabilities to initialize and transform a Matrix
 pub trait Matrix4Ops<T> {
-    
     /// .
     fn equal(&self, other: &Self) -> bool;
 
@@ -218,13 +212,16 @@ pub trait Matrix4Ops<T> {
     fn scale(&mut self, x: T, y: T, z: T) -> Self;
 
     /// Returns the Shearing Matrix
-    fn shear(&mut self, xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Self; 
-    
+    fn shear(&mut self, xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Self;
+
     /// Transposes a Matrix
     fn transpose(&mut self) -> Self;
 
     /// Returns a translation Matrix
-    fn translate(&mut self, x: T, y: T, z: T)  -> Self ;
+    fn translate(&mut self, x: T, y: T, z: T) -> Self;
+
+    /// Reverts the Matrix into an idenitity matrix
+    fn to_identity(&mut self) -> Self;
 
     /// Returns a new matrix filled with '0'
     fn zero() -> Self;
@@ -348,8 +345,8 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         Self { m: [[1.0; 4]; 4] }
     }
 
-    fn rotate_x(& mut self, radians: f64) -> Self {
-        let mut res = Matrix4::IDENTITY; 
+    fn rotate_x(&mut self, radians: f64) -> Self {
+        let mut res = Matrix4::IDENTITY;
         res.m[1][1] = radians.cos();
         res.m[1][2] = -radians.sin();
         res.m[2][1] = radians.sin();
@@ -358,8 +355,8 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         *self
     }
 
-    fn rotate_y(&mut self, radians: f64) -> Self { 
-        let mut res = Matrix4::IDENTITY; 
+    fn rotate_y(&mut self, radians: f64) -> Self {
+        let mut res = Matrix4::IDENTITY;
         res.m[0][0] = radians.cos();
         res.m[0][2] = radians.sin();
         res.m[2][0] = -radians.sin();
@@ -368,8 +365,8 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         *self
     }
 
-    fn rotate_z(& mut self, radians: f64) -> Self {
-        let mut res = Matrix4::IDENTITY; 
+    fn rotate_z(&mut self, radians: f64) -> Self {
+        let mut res = Matrix4::IDENTITY;
         res.m[0][0] = radians.cos();
         res.m[0][1] = -radians.sin();
         res.m[1][0] = radians.sin();
@@ -379,16 +376,16 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
     }
 
     fn scale(&mut self, x: f64, y: f64, z: f64) -> Self {
-        let mut res = Matrix4::IDENTITY; 
+        let mut res = Matrix4::IDENTITY;
         res.m[0][0] = x;
         res.m[1][1] = y;
         res.m[2][2] = z;
-        *self = res * *self ;
+        *self = res * *self;
         *self
     }
 
     fn shear(&mut self, xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Self {
-        let mut res = Matrix4::IDENTITY; 
+        let mut res = Matrix4::IDENTITY;
         res.m[0][1] = xy;
         res.m[0][2] = xz;
         res.m[1][0] = yx;
@@ -412,11 +409,16 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
     }
 
     fn translate(&mut self, x: f64, y: f64, z: f64) -> Self {
-        let mut res = Matrix4::IDENTITY; 
+        let mut res = Matrix4::IDENTITY;
         res.m[0][3] = x;
         res.m[1][3] = y;
         res.m[2][3] = z;
-        *self = res * *self ;
+        *self = res * *self;
+        *self
+    }
+
+    fn to_identity(&mut self) -> Self {
+        *self = Matrix4::IDENTITY;
         *self
     }
 

@@ -109,7 +109,7 @@ impl Default for Vector3<f64> {
 
 impl PartialEq for Vector3<f64> {
     fn eq(&self, other: &Self) -> bool {
-        self.equal(*other) 
+        self.equal(*other)
     }
 
     fn ne(&self, other: &Self) -> bool {
@@ -117,10 +117,9 @@ impl PartialEq for Vector3<f64> {
     }
 }
 
-impl Eq for Vector3<f64>{
-}
+impl Eq for Vector3<f64> {}
 
-impl PartialEq for Point3<f64>{
+impl PartialEq for Point3<f64> {
     fn eq(&self, other: &Self) -> bool {
         self.equal(*other)
     }
@@ -130,8 +129,7 @@ impl PartialEq for Point3<f64>{
     }
 }
 
-impl Eq for Point3<f64>{
-}
+impl Eq for Point3<f64> {}
 
 /// Trait allows Types with coordinates (x, y, etc.) to be efficiently initialized with common shorthand.
 pub trait CoordInit<T, U> {

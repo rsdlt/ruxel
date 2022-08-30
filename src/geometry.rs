@@ -18,5 +18,9 @@ use std::f64::consts::PI;
 
 /// Provides data structures, methods and traits for Matrix4 computations.
 pub mod matrix;
+
 /// Data structures and methods for Vector3 and Point3 computations.
 pub mod vector;
+
+/// Data structures and methdos for Ray computations
+pub mod ray;
