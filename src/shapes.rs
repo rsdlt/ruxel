@@ -15,3 +15,7 @@ pub mod core;
 
 /// Provides the data structure and implementation to import External shapes
 pub mod external;
+
+#[derive(Debug)]
+pub struct Shape {
+}

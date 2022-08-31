@@ -14,6 +14,7 @@
 // Bring vector types into scope
 use crate::geometry::{vector::*, ray::Ray};
 use Axis::{XY as xy, XYZ as xyz, XYZW as xyzw};
+use super::*;
 
 /// Representation of a 3D sphere
 #[derive(Debug)]
@@ -21,6 +22,7 @@ pub struct Sphere<T>{
     center: Point3<T>,
     radius: T,
 }
+
 
 impl Sphere<f64>{
 

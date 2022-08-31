@@ -69,3 +69,9 @@ fn test_ray_intersect_sphere(){
     let xs = s.intersect(r);
     assert_eq!(xs, Some((-6.0, -4.0)));
 }
+
+#[test]
+fn test_intersection(){
+
+}
+

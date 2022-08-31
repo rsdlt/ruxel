@@ -7,11 +7,11 @@
 // except according to those terms.
 
 /** 
- Data structures and methods for Ray computations
+ Data structures and methods for Ray and Intersection computations
 */
 
 use std::fmt::Display;
-
+use crate::shapes::*;
 
 // Unit tests for Ray 
 #[cfg(test)]
@@ -23,9 +23,25 @@ use super::{EPSILON, vector::*};
 /// Type representing a Ray
 #[derive(Debug, Clone, Copy)]
 pub struct Ray<T>{
+    /// .
     pub origin: Point3<T>,
+
+    /// .
     pub direction: Vector3<T>,
 }
+
+
+/// Type representing an Intersection between a Ray and a Shape
+/// For every shape we can have 0..n intersections
+#[derive(Debug)]
+pub struct Intersection {
+    /// .
+    pub shape: Shape,
+    /// .
+    pub t: f64,
+}
+
+
 
 impl Display for Ray<f64>{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -57,4 +73,12 @@ impl RayOps<f64> for Ray<f64>{
        ray.origin + ray.direction * t
     }
 }
+
+
+impl Intersection{
+    fn intersection(t: f64, shape: Shape) -> Self{
+        Self{shape, t} 
+    }
+}
+
 
