@@ -8,7 +8,6 @@
 
 /// Unit testing for the Canvas types
 use super::*;
-use crate::Axis::XYZ as xyz;
 use std::path::Path;
 
 #[test]
@@ -44,8 +43,8 @@ fn test_projectile_launch_canvas() {
     }
 
     let mut proj = Projectile {
-        position: Point3::up(),
-        velocity: Vector3::new(xyz(1.0, 1.8, 0.0)).normalized() * 11.25,
+        position: Point3::y_coord(1.0),
+        velocity: Vector3::new(1.0, 1.8, 0.0).normalized() * 11.25,
     };
 
     let env = Environment {

@@ -9,149 +9,177 @@
 /**
   Data structures and methods for Vector3 and Point3 computations.
 */
-// Bring operator overloading and relevant standard library traits into scope
-use std::{
-    cmp::{Eq, PartialEq},
-    fmt::Display,
-    ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign},
-};
+use num::{cast::NumCast, Num};
+use std::fmt::Display;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
-// Bring Num crate into scope to provide multiplicative identities for One and Zero
-use num::Num;
-
-// Bring geometry module constants into scope
+// Bring Geometry module constants into scope.
 use super::EPSILON;
 
-// Unit tests for Vector3 and Point3
+/// Provides Unit tests for Vector and Point types.
 #[cfg(test)]
 mod tests;
 
-/**
-Enumerator that encapsulates the different coordinate systems used to initialize a Vector or Point
-Point
-*/
-#[derive(Debug)]
-pub enum Axis<U> {
-    /// Coordinate system with X and Y axis.
-    XY(U, U),
-    /// Coordinate system with X, Y and Z axis.
-    XYZ(U, U, U),
-    /// Coordinate system with X, Y, Z axis and W component.
-    XYZW(U, U, U, U),
-}
-
 /// Type representing a geometric 3D Vector in its 'homogeneous' form with x, y, z, w components,
 /// and where 'w' stands for 'weight'
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vector3<P> {
-    /// Component on x axis
+    /// Component on the X axis
     pub x: P,
-    /// Component on y axis
+    /// Component on the Y axis
     pub y: P,
-    /// Component on z axis
-    pub z: P,
-    /// Component on w axis
-    pub w: P,
-}
-
-/// Type representing a geometric 3D Point in its 'homogeneous' form with x, y, z components, and
-/// where 'W' stands for 'weight'
-#[derive(Debug, Default, Clone, Copy)]
-pub struct Point3<P> {
-    /// Component on x axis
-    pub x: P,
-    /// Component on y axis
-    pub y: P,
-    /// Component on z axis
+    /// Component on the Z axis
     pub z: P,
     /// Component representing the 'weight'
     pub w: P,
 }
 
-/// Trait that enabling generic Vector3 and Point3 types to be initialized
-trait Tuple<P> {
-    /// Create a new Vector3 or Point3 with user-defined values
-    fn new(x: P, y: P, z: P) -> Self
-    where
-        P: Copy + Num;
+/// Type representing a geometric 3D Point in its 'homogeneous' form with x, y, z components, and
+/// where 'W' stands for 'weight'
+#[derive(Clone, Copy, Debug)]
+pub struct Point3<P> {
+    /// Component on the X axis
+    pub x: P,
+    /// Component on the Y axis
+    pub y: P,
+    /// Component on the Z axis
+    pub z: P,
+    /// Component representing the 'weight'
+    pub w: P,
+}
 
-    /// Create a new Vector3 or Point3 where all coordinates (x, y, z) have the same
-    /// user-defined value
+/// Trait that provides Vector and Point common initialization capabilities.
+pub trait Tuple<P> {
+    /// Initialize a Vector or Point with all its axis with the same user-defined value.
     fn all(all: P) -> Self
     where
         P: Copy + Num;
 
-    fn equal(self, rhs: Self) -> bool;
+    /// Initialize a Vector or Point with each axis with a separate user-defined value.
+    fn new(x: P, y: P, z: P) -> Self
+    where
+        P: Copy + Num;
 
-    /// Create a new Vector3 or Point3 where in the form of [x_val, 0, 0] where
-    /// x_val is a user-defined value
+    /// Initialize a Vector or Point with the X coordinate axis with a user-defined value.
     fn x_coord(x_val: P) -> Self
     where
         P: Copy + Num;
 
-    /// Create a new Vector3 or Point3 where in the form of [0, y_val, 0] where
-    /// y_val is a user-defined value
+    /// Initialize a Vector or Point with the Y coordinate axis with a user-defined value.
     fn y_coord(y_val: P) -> Self
     where
         P: Copy + Num;
 
-    /// Create a new Vector3 or Point3 where in the form of [0, 0, z_val] where
-    /// z_val is a user-defined value
+    /// Initialize a Vector or Point with the Z coordinate axis with a user-defined value.
     fn z_coord(z_val: P) -> Self
     where
         P: Copy + Num;
 }
 
-/// Trait that enables specific Vector3 capabilities
-trait Vector<P>: Tuple<P> {
-    /// Calculate the dot product of two Vector3
+/// Trait that provides Vector capabilities.
+pub trait Vector<P>: Tuple<P> {
+    /// Initialize a Vector with all the coordinates with a value of '1'.
+    fn one() -> Self
+    where
+        P: Copy + Num;
+
+    /// Initialize a Vector with all the coordinates with a value of '0'.
+    fn zero() -> Self
+    where
+        P: Copy + Num;
+
+    /// Initialize a Vector with the Z coordinate with a value of '-1'.
+    fn back() -> Self
+    where
+        P: Copy + Num + Neg + Neg<Output = P>;
+
+    /// Initialize a Vector with the Y coordinate with a value of '-1'.
+    fn down() -> Self
+    where
+        P: Copy + Num + Neg + Neg<Output = P>;
+
+    /// Initialize a Vector with the Z coordinate with a value of '1'.
+    fn forward() -> Self
+    where
+        P: Copy + Num;
+
+    /// Initialize a Vector with the X coordinate with a value of '-1'.
+    fn left() -> Self
+    where
+        P: Copy + Num + Neg + Neg<Output = P>;
+
+    /// Initialize a Vector with the X coordinate with a value of '1'.
+    fn right() -> Self
+    where
+        P: Copy + Num;
+
+    /// Initialize a Vector with the Y coordinate with a value of '1'.
+    fn up() -> Self
+    where
+        P: Copy + Num;
+
+    /// Normalize a Vector by dividing it by its Magnitude.
+    fn normalized(&mut self) -> Self
+    where
+        P: Copy + Num + NumCast;
+
+    /// Return the information of the smallest coordinate value.
+    fn min_component(&self) -> (i8, char, P)
+    where
+        P: Copy + PartialOrd;
+
+    /// Return the information of the largest coordinate value.
+    fn max_component(&self) -> (i8, char, P)
+    where
+        P: Copy + PartialOrd;
+
+    /// Calculate the magnitude of a Vector.
+    fn magnitude(&self) -> P
+    where
+        P: Copy + Num + NumCast;
+
+    /// Calculate the Cross product between two Vectors.
+    fn cross(lhs: Vector3<P>, rhs: Vector3<P>) -> Vector3<P>
+    where
+        P: Copy + Num;
+
+    /// Calculate the Dot product between two Vectors.
     fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P
     where
-        P: Copy + Add<Output = P> + Mul<Output = P>;
+        P: Copy + Num;
 }
 
-/// Trait that enables specific Point3 capabilities
-trait Point<P>: Tuple<P> {
-    /// Set up the origin coordinates of a Point3
-    fn origin(origin: P) -> Self
+/// Trait that provides Point capabilities.
+pub trait Point<P>: Tuple<P> {
+    /// Set a Point with all its coordinates with a value of '0'.
+    fn origin(&mut self) -> Self
     where
-        P: Copy + Default;
+        P: Copy + Num;
 }
 
-/// Implementation of initialization capabilities for Vector3
+// Implementation of the Tuple Supertrait for Vector.
 impl<P> Tuple<P> for Vector3<P> {
+    fn all(all: P) -> Self
+    where
+        P: Copy + Num,
+    {
+        Vector3 {
+            x: num::one::<P>() * all,
+            y: num::one::<P>() * all,
+            z: num::one::<P>() * all,
+            w: num::zero::<P>(),
+        }
+    }
+
     fn new(x: P, y: P, z: P) -> Vector3<P>
     where
-        P: Copy + num::Zero,
+        P: Copy + Num,
     {
         Vector3 {
             x,
             y,
             z,
             w: num::zero(),
-        }
-    }
-
-    fn all(all: P) -> Self
-    where
-        P: Copy + num::One + num::Zero + Mul<Output = P>,
-    {
-        Vector3 {
-            x: num::one::<P>() * all,
-            y: num::one::<P>() * all,
-            z: num::one::<P>() * all,
-            w: num::zero::<P>() * all,
-        }
-    }
-
-    fn equal(self<f64>, rhs: Vector3<f64>) -> bool {
-        if ((self.x - rhs.x) as f64).abs() < EPSILON
-            && (self.y - rhs.y).abs() < EPSILON
-            && (self.z - rhs.z).abs() < EPSILON
-        {
-            true
-        } else {
-            false
         }
     }
 
@@ -192,7 +220,7 @@ impl<P> Tuple<P> for Vector3<P> {
     }
 }
 
-/// Initialization capabilities implementation for Point3
+// Implementation of the Tuple Supertrait for Point.
 impl<P> Tuple<P> for Point3<P> {
     fn new(x: P, y: P, z: P) -> Self
     where
@@ -256,17 +284,236 @@ impl<P> Tuple<P> for Point3<P> {
     }
 }
 
-/// Vector3 specific capabilities implementation
-impl<P> Vector<P> for Vector3<P> {
-    fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P
+// Implementation of the Point subtrait capabilities.
+impl<P> Point<P> for Point3<P> {
+    fn origin(&mut self) -> Self
     where
-        P: Copy + Add<Output = P> + Mul<Output = P>,
+        P: Copy + Num,
     {
-        lhs.x * rhs.x + lhs.w * rhs.w
+        Point3 {
+            x: num::zero(),
+            y: num::zero(),
+            z: num::zero(),
+            w: num::one(),
+        }
     }
 }
 
-// Display trait implementation
+// Implemenation of the Vector subtrait capabilitites.
+impl<P> Vector<P> for Vector3<P> {
+    fn one() -> Self
+    where
+        P: Copy + Num,
+    {
+        Vector3 {
+            x: num::one(),
+            y: num::one(),
+            z: num::one(),
+            w: num::zero(),
+        }
+    }
+
+    fn zero() -> Self
+    where
+        P: Copy + Num,
+    {
+        Vector3 {
+            x: num::zero(),
+            y: num::zero(),
+            z: num::zero(),
+            w: num::zero(),
+        }
+    }
+
+    fn back() -> Self
+    where
+        P: Copy + Num + Neg + Neg<Output = P>,
+    {
+        Vector3 {
+            x: num::zero(),
+            y: num::zero(),
+            z: -num::one::<P>(),
+            w: num::zero(),
+        }
+    }
+
+    fn down() -> Self
+    where
+        P: Copy + Num + Neg + Neg<Output = P>,
+    {
+        Vector3 {
+            x: num::zero(),
+            y: -num::one::<P>(),
+            z: num::zero(),
+            w: num::zero(),
+        }
+    }
+
+    fn forward() -> Self
+    where
+        P: Copy + Num,
+    {
+        Vector3 {
+            x: num::zero(),
+            y: num::zero(),
+            z: num::one(),
+            w: num::zero(),
+        }
+    }
+
+    fn left() -> Self
+    where
+        P: Copy + Num + Neg + Neg<Output = P>,
+    {
+        Vector3 {
+            x: -num::one::<P>(),
+            y: num::zero(),
+            z: num::zero(),
+            w: num::zero(),
+        }
+    }
+
+    fn right() -> Self
+    where
+        P: Copy + Num,
+    {
+        Vector3 {
+            x: num::one(),
+            y: num::zero(),
+            z: num::zero(),
+            w: num::zero(),
+        }
+    }
+
+    fn up() -> Self
+    where
+        P: Copy + Num,
+    {
+        Vector3 {
+            x: num::zero(),
+            y: num::one(),
+            z: num::zero(),
+            w: num::zero(),
+        }
+    }
+
+    fn normalized(&mut self) -> Self
+    where
+        P: Copy + Num + NumCast,
+    {
+        let mag = self.magnitude();
+        Self {
+            x: self.x / mag,
+            y: self.y / mag,
+            z: self.z / mag,
+            w: self.w / mag,
+        }
+    }
+
+    fn min_component(&self) -> (i8, char, P)
+    where
+        P: Copy + PartialOrd,
+    {
+        if self.x <= self.y && self.x <= self.z {
+            (0, 'x', self.x)
+        } else if self.y <= self.z {
+            (1, 'y', self.y)
+        } else {
+            (2, 'z', self.z)
+        }
+    }
+
+    fn max_component(&self) -> (i8, char, P)
+    where
+        P: Copy + PartialOrd,
+    {
+        if self.x >= self.y && self.x >= self.z {
+            (0, 'x', self.x)
+        } else if self.y >= self.z {
+            (1, 'y', self.y)
+        } else {
+            (2, 'z', self.z)
+        }
+    }
+
+    fn magnitude(&self) -> P
+    where
+        P: Copy + Num + NumCast,
+    {
+        P::from(
+            (self.x * self.x + self.y * self.y + self.z * self.z)
+                .to_f64()
+                .unwrap()
+                .sqrt(),
+        )
+        .unwrap()
+    }
+
+    fn cross(lhs: Vector3<P>, rhs: Vector3<P>) -> Vector3<P>
+    where
+        P: Copy + Num,
+    {
+        Vector3 {
+            x: lhs.y * rhs.z - lhs.z * rhs.y,
+            y: lhs.z * rhs.x - lhs.x * rhs.z,
+            z: lhs.x * rhs.y - lhs.y * rhs.x,
+            w: num::zero(),
+        }
+    }
+
+    fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P
+    where
+        P: Copy + Num,
+    {
+        lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
+    }
+}
+
+// Implementation of the Partial Equivalence trait for Vector.
+impl<P> PartialEq for Vector3<P>
+where
+    P: Num + NumCast,
+{
+    fn eq(&self, other: &Self) -> bool {
+        if (self.x.to_f64().unwrap() - other.x.to_f64().unwrap()).abs() < EPSILON
+            && (self.y.to_f64().unwrap() - other.y.to_f64().unwrap()).abs() < EPSILON
+            && (self.z.to_f64().unwrap() - other.z.to_f64().unwrap()).abs() < EPSILON
+            && (self.w.to_f64().unwrap() - other.w.to_f64().unwrap()).abs() < EPSILON
+        {
+            true
+        } else {
+            false
+        }
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+// Implementation of the Partial Equivalence trait for Point.
+impl<P> PartialEq for Point3<P>
+where
+    P: Num + NumCast,
+{
+    fn eq(&self, other: &Self) -> bool {
+        if (self.x.to_f64().unwrap() - other.x.to_f64().unwrap()).abs() < EPSILON
+            && (self.y.to_f64().unwrap() - other.y.to_f64().unwrap()).abs() < EPSILON
+            && (self.z.to_f64().unwrap() - other.z.to_f64().unwrap()).abs() < EPSILON
+            && (self.w.to_f64().unwrap() - other.w.to_f64().unwrap()).abs() < EPSILON
+        {
+            true
+        } else {
+            false
+        }
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
+
+// Implementation of the Display trait for Vector.
 impl<P> Display for Vector3<P>
 where
     P: Display,
@@ -279,6 +526,8 @@ where
         f.write_str(&s)
     }
 }
+
+// Implementation of the Display trait for Point.
 impl<P> Display for Point3<P>
 where
     P: Display,
@@ -292,341 +541,63 @@ where
     }
 }
 
-// TODO:
-impl PartialEq for Vector3<f64> {
-    fn eq(&self, other: &Self) -> bool {
-        self.equal(*other)
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        !self.equal(*other)
-    }
-}
-
-impl Eq for Vector3<f64> {}
-
-impl PartialEq for Point3<f64> {
-    fn eq(&self, other: &Self) -> bool {
-        self.equal(*other)
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        !self.equal(*other)
-    }
-}
-
-impl Eq for Point3<f64> {}
-
-/// Trait allows Types with coordinates (x, y, etc.) to be efficiently initialized with common shorthand.
-pub trait CoordInit<T, U> {
-    /// Return a type with shorthand, for example [0, 0, -1].
-    fn back() -> T;
-    /// Return a type with shorthand, for example  [0, -1, 0].
-    fn down() -> T;
-    /// Return true if a type is identical to another, else return false.
-    fn equal(self, rhs: Self) -> bool;
-    /// Return a type with shorthand, for example  [0, 0, 1].
-    fn forward() -> T;
-    /// Return a type with shorthand, for example  [-1, 0, 0].
-    fn left() -> T;
-    /// Return a type with user-defined Axis components.
-    fn new(axis: Axis<U>) -> T;
-    /// Return a type with shorthand, for example  [1, 1, 1].
-    fn one() -> T;
-    /// Return a type with shorthand [1, 0, 0].
-    fn right() -> T;
-    /// Return a type with shorthand [0, 1, 0].
-    fn up() -> T;
-    /// Return a type with shorthand [0, 0, 0].
-    fn zero() -> T;
-}
-
-/// A trait that encapsulates common Vector Operations.
-pub trait VecOps<T> {
-    /// Computes the magnitude of a Vector.
-    fn magnitude(&self) -> f64;
-    /// Returns the vector normalized (with magnitude of 1.0)
-    fn normalized(&mut self) -> Self;
-    /// Returns the Dot Product of two Vectors.
-    fn dot(lhs: T, rhs: T) -> f64;
-    /// Returns the Cross Product of two Vectors.
-    fn cross(lhs: T, rhs: T) -> T;
-    /// Returns the Smallest component in the Vector.
-    fn min_component(&self) -> (i8, char, f64);
-    /// Returns the Largest component in the Vector.
-    fn max_component(&self) -> (i8, char, f64);
-    /// Returns the component of the Vector by index. this(1)
-    fn this(&self, index: i8) -> Option<(i8, char, f64)>;
-    /// Returns the component of the Vector by name. this_n('x')
-    fn this_name(&self, index: char) -> Option<(i8, char, f64)>;
-}
-
-impl VecOps<Vector3<f64>> for Vector3<f64> {
-    fn magnitude(&self) -> f64 {
-        (self.x.powf(2.0) + self.y.powf(2.0) + self.z.powf(2.0)).sqrt()
-    }
-
-    fn normalized(&mut self) -> Self {
-        let magnitude = self.magnitude();
-        Self {
-            x: self.x / magnitude,
-            y: self.y / magnitude,
-            z: self.z / magnitude,
-            w: 0.0,
-        }
-    }
-
-    fn dot(lhs: Vector3<f64>, rhs: Vector3<f64>) -> f64 {
-        lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
-    }
-
-    fn cross(lhs: Vector3<f64>, rhs: Vector3<f64>) -> Vector3<f64> {
+// Implementation of the Default trait for Point.
+impl<P> Default for Vector3<P>
+where
+    P: Num,
+{
+    fn default() -> Self {
         Vector3 {
-            x: lhs.y * rhs.z - lhs.z * rhs.y,
-            y: lhs.z * rhs.x - lhs.x * rhs.z,
-            z: lhs.x * rhs.y - lhs.y * rhs.x,
-            w: 0.0,
-        }
-    }
-
-    fn min_component(&self) -> (i8, char, f64) {
-        if self.x <= self.y && self.x <= self.z {
-            (0, 'x', self.x)
-        } else if self.y <= self.z {
-            (1, 'y', self.y)
-        } else {
-            (2, 'z', self.z)
-        }
-    }
-
-    fn max_component(&self) -> (i8, char, f64) {
-        if self.x >= self.y && self.x >= self.z {
-            (0, 'x', self.x)
-        } else if self.y >= self.z {
-            (1, 'y', self.y)
-        } else {
-            (2, 'z', self.z)
-        }
-    }
-
-    fn this(&self, index: i8) -> Option<(i8, char, f64)> {
-        match index {
-            0 => Some((0, 'x', self.x)),
-            1 => Some((1, 'y', self.y)),
-            2 => Some((2, 'z', self.z)),
-            _ => None,
-        }
-    }
-
-    fn this_name(&self, index: char) -> Option<(i8, char, f64)> {
-        match index {
-            'x' => Some((0, 'x', self.x)),
-            'y' => Some((1, 'y', self.y)),
-            'z' => Some((2, 'z', self.z)),
-            _ => None,
+            x: num::zero(),
+            y: num::zero(),
+            z: num::zero(),
+            w: num::zero(),
         }
     }
 }
 
-impl CoordInit<Vector3<f64>, f64> for Vector3<f64> {
-    fn back() -> Self {
-        Vector3 {
-            x: 0.0,
-            y: 0.0,
-            z: -1.0,
-            w: 0.0,
-        }
-    }
-    fn down() -> Self {
-        Vector3 {
-            x: 0.0,
-            y: -1.0,
-            z: 0.0,
-            w: 0.0,
-        }
-    }
-    fn equal(self, other: Self) -> bool {
-        if (self.x - other.x).abs() < EPSILON
-            && (self.y - other.y).abs() < EPSILON
-            && (self.z - other.z).abs() < EPSILON
-        {
-            true
-        } else {
-            false
-        }
-    }
-
-    fn forward() -> Self {
-        Vector3 {
-            x: 0.0,
-            y: 0.0,
-            z: 1.0,
-            w: 0.0,
-        }
-    }
-
-    fn left() -> Self {
-        Vector3 {
-            x: -1.0,
-            y: 0.0,
-            z: 0.0,
-            w: 0.0,
-        }
-    }
-
-    fn new(axis: Axis<f64>) -> Vector3<f64> {
-        match axis {
-            Axis::XY(x, y) => Vector3 {
-                x,
-                y,
-                z: 0.0,
-                w: 0.0,
-            },
-            Axis::XYZ(x, y, z) => Vector3 { x, y, z, w: 0.0 },
-            Axis::XYZW(x, y, z, w) => Vector3 { x, y, z, w },
-        }
-    }
-
-    fn one() -> Self {
-        Vector3 {
-            x: 1.0,
-            y: 1.0,
-            z: 1.0,
-            w: 0.0,
-        }
-    }
-
-    fn right() -> Self {
-        Vector3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-            w: 0.0,
-        }
-    }
-
-    fn up() -> Self {
-        Vector3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-            w: 0.0,
-        }
-    }
-
-    fn zero() -> Self {
-        Vector3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            w: 0.0,
+// Implementation of the Default trait for Point.
+impl<P> Default for Point3<P>
+where
+    P: Num,
+{
+    fn default() -> Self {
+        Point3 {
+            x: num::zero(),
+            y: num::zero(),
+            z: num::zero(),
+            w: num::one(),
         }
     }
 }
 
-impl CoordInit<Point3<f64>, f64> for Point3<f64> {
-    fn back() -> Point3<f64> {
-        Point3 {
-            x: 0.0,
-            y: 0.0,
-            z: -1.0,
-            w: 1.0,
-        }
-    }
+// ---- Operator Overloading Implementations for Vector and Point.
 
-    fn down() -> Point3<f64> {
-        Point3 {
-            x: 0.0,
-            y: -1.0,
-            z: 0.0,
-            w: 1.0,
-        }
-    }
+// Vector + Vector
+impl<P> Add for Vector3<P>
+where
+    P: Num,
+{
+    type Output = Vector3<P>;
 
-    fn equal(self, other: Self) -> bool {
-        if (self.x - other.x).abs() < EPSILON
-            && (self.y - other.y).abs() < EPSILON
-            && (self.z - other.z).abs() < EPSILON
-            && (self.w - other.w).abs() < EPSILON
-        {
-            true
-        } else {
-            false
-        }
-    }
-
-    fn forward() -> Point3<f64> {
-        Point3 {
-            x: 0.0,
-            y: 0.0,
-            z: 1.0,
-            w: 1.0,
-        }
-    }
-
-    fn left() -> Point3<f64> {
-        Point3 {
-            x: -1.0,
-            y: 0.0,
-            z: 0.0,
-            w: 1.0,
-        }
-    }
-
-    fn one() -> Self {
-        Point3 {
-            x: 1.0,
-            y: 1.0,
-            z: 1.0,
-            w: 1.0,
-        }
-    }
-
-    fn right() -> Point3<f64> {
-        Point3 {
-            x: 1.0,
-            y: 0.0,
-            z: 0.0,
-            w: 1.0,
-        }
-    }
-
-    fn up() -> Point3<f64> {
-        Point3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-            w: 1.0,
-        }
-    }
-
-    fn zero() -> Self {
-        Point3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            w: 1.0,
-        }
-    }
-
-    fn new(axis: Axis<f64>) -> Point3<f64> {
-        match axis {
-            Axis::XY(x, y) => Point3 {
-                x,
-                y,
-                z: 0.0,
-                w: 1.0,
-            },
-            Axis::XYZ(x, y, z) => Point3 { x, y, z, w: 1.0 },
-            Axis::XYZW(x, y, z, w) => Point3 { x, y, z, w },
+    fn add(self, rhs: Vector3<P>) -> Self::Output {
+        Vector3 {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+            w: self.w + rhs.w,
         }
     }
 }
 
-impl Add<Point3<f64>> for Vector3<f64> {
-    type Output = Point3<f64>;
+// Vector + Point
+impl<P> Add<Point3<P>> for Vector3<P>
+where
+    P: Num,
+{
+    type Output = Point3<P>;
 
-    fn add(self, rhs: Point3<f64>) -> Point3<f64> {
+    fn add(self, rhs: Point3<P>) -> Self::Output {
         Point3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
@@ -636,10 +607,14 @@ impl Add<Point3<f64>> for Vector3<f64> {
     }
 }
 
-impl Add<Vector3<f64>> for Point3<f64> {
-    type Output = Point3<f64>;
+/// Point + Vector
+impl<P> Add<Vector3<P>> for Point3<P>
+where
+    P: Num,
+{
+    type Output = Point3<P>;
 
-    fn add(self, rhs: Vector3<f64>) -> Point3<f64> {
+    fn add(self, rhs: Vector3<P>) -> Self::Output {
         Point3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
@@ -649,75 +624,82 @@ impl Add<Vector3<f64>> for Point3<f64> {
     }
 }
 
-impl Add for Vector3<f64> {
-    type Output = Vector3<f64>;
+/// Vector - Vector
+impl<P> Sub<Vector3<P>> for Vector3<P>
+where
+    P: Num,
+{
+    type Output = Vector3<P>;
 
-    fn add(self, rhs: Self) -> Vector3<f64> {
-        Vector3 {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-            z: self.z + rhs.z,
-            w: 0.0,
-        }
-    }
-}
-
-impl Sub for Vector3<f64> {
-    type Output = Vector3<f64>;
-
-    fn sub(self, rhs: Self) -> Vector3<f64> {
+    fn sub(self, rhs: Vector3<P>) -> Self::Output {
         Vector3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
-            w: 0.0,
+            w: self.w - rhs.w,
         }
     }
 }
 
-impl Sub for Point3<f64> {
-    type Output = Vector3<f64>;
+/// Point - Point
+impl<P> Sub<Point3<P>> for Point3<P>
+where
+    P: Num,
+{
+    type Output = Vector3<P>;
 
-    fn sub(self, rhs: Self) -> Vector3<f64> {
+    fn sub(self, rhs: Point3<P>) -> Self::Output {
         Vector3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
-            w: 0.0,
+            w: self.w - rhs.w,
         }
     }
 }
 
-impl Sub<Vector3<f64>> for Point3<f64> {
-    type Output = Point3<f64>;
+/// Point - Vector
+impl<P> Sub<Vector3<P>> for Point3<P>
+where
+    P: Num,
+{
+    type Output = Point3<P>;
 
-    fn sub(self, rhs: Vector3<f64>) -> Point3<f64> {
+    fn sub(self, rhs: Vector3<P>) -> Self::Output {
         Point3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
-            w: self.w,
+            w: self.w - rhs.w,
         }
     }
 }
 
-impl Neg for Vector3<f64> {
-    type Output = Vector3<f64>;
+/// -Vector
+impl<P> Neg for Vector3<P>
+where
+    P: Num + Neg + Neg<Output = P>,
+{
+    type Output = Vector3<P>;
 
-    fn neg(self) -> Vector3<f64> {
+    fn neg(self) -> Self::Output {
         Vector3 {
             x: -self.x,
             y: -self.y,
             z: -self.z,
-            w: 0.0,
+            w: -self.w,
         }
     }
 }
 
-impl Neg for Point3<f64> {
-    type Output = Point3<f64>;
+/// -Point
+impl<P> Neg for Point3<P>
+where
+    P: Num + Neg + Neg<Output = P>,
+{
+    type Output = Point3<P>;
 
-    fn neg(self) -> Point3<f64> {
+    fn neg(self) -> Self::Output {
         Point3 {
             x: -self.x,
             y: -self.y,
@@ -727,23 +709,31 @@ impl Neg for Point3<f64> {
     }
 }
 
-impl Mul<f64> for Vector3<f64> {
-    type Output = Vector3<f64>;
+/// Vector * Scalar
+impl<P> Mul<P> for Vector3<P>
+where
+    P: Copy + Num,
+{
+    type Output = Vector3<P>;
 
-    fn mul(self, rhs: f64) -> Vector3<f64> {
+    fn mul(self, rhs: P) -> Self::Output {
         Vector3 {
             x: self.x * rhs,
             y: self.y * rhs,
             z: self.z * rhs,
-            w: 0.0,
+            w: self.w * rhs,
         }
     }
 }
 
-impl Mul<f64> for Point3<f64> {
-    type Output = Point3<f64>;
+/// Point * Scalar
+impl<P> Mul<P> for Point3<P>
+where
+    P: Copy + Num,
+{
+    type Output = Point3<P>;
 
-    fn mul(self, rhs: f64) -> Point3<f64> {
+    fn mul(self, rhs: P) -> Self::Output {
         Point3 {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -753,22 +743,15 @@ impl Mul<f64> for Point3<f64> {
     }
 }
 
-impl Div<f64> for Vector3<f64> {
-    type Output = Vector3<f64>;
-    fn div(self, rhs: f64) -> Vector3<f64> {
-        Vector3 {
-            x: self.x / rhs,
-            y: self.y / rhs,
-            z: self.z / rhs,
-            w: 0.0,
-        }
-    }
-}
+/// Vector / Scalar
+impl<P> Div<P> for Vector3<P>
+where
+    P: Copy + Num,
+{
+    type Output = Vector3<P>;
 
-impl Div<f64> for Point3<f64> {
-    type Output = Point3<f64>;
-    fn div(self, rhs: f64) -> Point3<f64> {
-        Point3 {
+    fn div(self, rhs: P) -> Self::Output {
+        Vector3 {
             x: self.x / rhs,
             y: self.y / rhs,
             z: self.z / rhs,
@@ -777,24 +760,19 @@ impl Div<f64> for Point3<f64> {
     }
 }
 
-impl AddAssign for Vector3<f64> {
-    fn add_assign(&mut self, other: Self) {
-        *self = Self {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-            w: 0.0,
-        }
-    }
-}
+/// Point / Scalar
+impl<P> Div<P> for Point3<P>
+where
+    P: Copy + Num,
+{
+    type Output = Point3<P>;
 
-impl SubAssign for Vector3<f64> {
-    fn sub_assign(&mut self, other: Self) {
-        *self = Self {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
-            w: 0.0,
+    fn div(self, rhs: P) -> Self::Output {
+        Point3 {
+            x: self.x / rhs,
+            y: self.y / rhs,
+            z: self.z / rhs,
+            w: self.w / rhs,
         }
     }
 }

@@ -7,15 +7,15 @@
 // except according to those terms.
 
 /**
-The Shapes module implements the functionality for Core shapes like Circle, Cylinder, Cube, and for External shapes from import of *.OBJ files or other formats 
+The Shapes module implements the functionality for Core shapes like Circle, Cylinder, Cube, and for External shapes from import of *.OBJ files or other formats
 */
 
-/// Provides the data structure and implementation of the Core shapes 
+/// Provides the data structure and implementation of the Core shapes
 pub mod core;
 
 /// Provides the data structure and implementation to import External shapes
 pub mod external;
 
 #[derive(Debug)]
-pub struct Shape {
-}
+/// Data structure representing a Shape.
+pub struct Shape {}

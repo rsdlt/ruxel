@@ -11,7 +11,7 @@
 /// Provides Unit tests for Matrix4 types.
 #[cfg(test)]
 mod tests;
- 
+
 use std::cmp::{Eq, PartialEq};
 use std::fmt::Display;
 use std::ops::{Mul, MulAssign};
@@ -499,7 +499,7 @@ impl Mul<Point3<f64>> for Matrix4<f64> {
     type Output = Point3<f64>;
 
     fn mul(self, rhs: Point3<f64>) -> Point3<f64> {
-        let mut v_res = Point3::zero();
+        let mut v_res = Point3::all(0.0);
         for row in 0..4 {
             match row {
                 0 => {
@@ -575,7 +575,7 @@ impl Mul<Matrix4<f64>> for Point3<f64> {
     type Output = Point3<f64>;
 
     fn mul(self, rhs: Matrix4<f64>) -> Point3<f64> {
-        let mut v_res = Point3::zero();
+        let mut v_res = Point3::all(0.0);
         for row in 0..4 {
             match row {
                 0 => {

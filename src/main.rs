@@ -21,7 +21,6 @@ Ruxel allows rendering and ray tracing of:
 
 #![allow(unused_imports)]
 
-
 use picture::colors::{ColorInit, ColorRgb};
 
 /**
@@ -39,20 +38,7 @@ The shapes module implements the functionality for Core and External shapes
 */
 pub mod shapes;
 
-
-
 // Bring modules into scope
-use geometry::{
-    matrix::{Matrix4, Matrix4Ops},
-    vector::{
-        Axis,
-        Axis::{XY as xy, XYZ as xyz, XYZW as xyzw},
-        CoordInit, Point3, Vector3,
-    },
-    ray::{Ray},
-};
+use geometry::{matrix::*, ray::*, vector::*};
 
-
-
-fn main() {
-}
+fn main() {}
