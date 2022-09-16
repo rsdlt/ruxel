@@ -23,4 +23,4 @@ categories=["graphics", "rendering"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
+num = "0.4"         # num crate to provide identity 'One' and 'Zero' regardless of external mutable state
