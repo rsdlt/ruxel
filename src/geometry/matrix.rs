@@ -12,9 +12,10 @@
 #[cfg(test)]
 mod tests;
 
+use num::{Num, NumCast};
 use std::cmp::{Eq, PartialEq};
 use std::fmt::Display;
-use std::ops::{Mul, MulAssign};
+use std::ops::{Mul, MulAssign, Neg};
 
 // Bring Vector module constants into scope
 use super::vector::*;
@@ -22,63 +23,87 @@ use super::vector::*;
 // Bring Geometry module constants into scope
 use super::EPSILON;
 
-/// Declaration for inner matrix data of size 4x4 and
-/// generic type
-/// [[columns] rows]
-/// [row][col]
-pub type Matrix4Data<T> = [[T; 4]; 4];
+/**
+Matrix 4x4 with generic data type.
+Declaration: [[columns] rows]
+Data access: [row][col]
+*/
+pub type Matrix4Data<P> = [[P; 4]; 4];
 
-/// Declararion for a matrix row of size 4 and
-/// generic type
-pub type Matrix4Row<T> = [T; 4];
+/// Row of a Matrix 4x4 with generic data type.
+pub type Matrix4Row<P> = [P; 4];
 
-/// Declararion for a matrix column of size 4 and
-/// generic type
-pub type Matrix4Col<T> = [T; 4];
+/// Column of a Matrix 4x4 with generic data type.
+pub type Matrix4Col<P> = [P; 4];
 
-/// Enum that allows a user to select a row or
-/// column from a matrix
+/**
+Enum that allows a user to select a Row or a
+Column from a Matrix
+*/
 #[derive(Debug)]
 pub enum Matrix4Index {
-    /// .
+    /// First Row or Column selector.
     One,
-    /// .
+    /// Second Row or Column selector.
     Two,
-    /// .
+    /// Third Row or Column selector.
     Three,
-    /// .
+    /// Fourth Row or Column selector.
     Four,
 }
 
-#[derive(Debug, Clone, Copy)]
-/// Definition of Matrix4
-pub struct Matrix4<T> {
-    m: Matrix4Data<T>,
+/**
+Matrix 4x4 with generic data.
+The data resides in the 'm' component of the structure.
+To access the data:
+matrix.m[0][0] = 12.5;
+*/
+#[derive(Clone, Copy, Debug)]
+pub struct Matrix4<P> {
+    m: Matrix4Data<P>,
 }
 
-#[derive(Debug, Clone, Copy)]
-/// Definition of Matrix3
-/// Only used in this module to calculate Matrix4 determinat and cofactor
-pub(crate) struct Matrix3<T> {
-    m: [[T; 3]; 3],
+/**
+Matrix3 generic structure.
+It is only used in this module to calculate Matrix4 determinat and cofactor.
+*/
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Matrix3<P> {
+    m: [[P; 3]; 3],
 }
 
-#[derive(Debug, Clone, Copy)]
-/// Definition of Matrix2
-/// Only used in this module to calculate Matrix4 determinat and cofactor
-pub(crate) struct Matrix2<T> {
-    m: [[T; 2]; 2],
+/**
+Matrix2 generic structure.
+It is only used in this module to calculate Matrix4 determinat and cofactor.
+*/
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Matrix2<P> {
+    m: [[P; 2]; 2],
 }
 
-impl Default for Matrix4<f64> {
+// -- Implementation of Standard Library Traits
+
+impl<P> Default for Matrix4<P>
+where
+    P: Copy + Num,
+{
     fn default() -> Self {
+        let zero: P = num::zero();
         Self {
-            m: Default::default(),
+            m: [
+                [zero, zero, zero, zero],
+                [zero, zero, zero, zero],
+                [zero, zero, zero, zero],
+                [zero, zero, zero, zero],
+            ],
         }
     }
 }
 
-impl Display for Matrix4<f64> {
+impl<P> Display for Matrix4<P>
+where
+    P: Copy + Display,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut s = "".to_string();
         for row in self.m {
@@ -94,47 +119,63 @@ impl Display for Matrix4<f64> {
     }
 }
 
-impl PartialEq for Matrix4<f64> {
+impl<P> PartialEq for Matrix4<P>
+where
+    P: Copy + Num + NumCast,
+{
     fn eq(&self, other: &Self) -> bool {
-        self.equal(other)
+        let mut flag = true;
+        for i in 0..4 {
+            if (self.m[i][0].to_f64().unwrap() - other.m[i][0].to_f64().unwrap()).abs() < EPSILON
+                && (self.m[i][1].to_f64().unwrap() - other.m[i][1].to_f64().unwrap()).abs()
+                    < EPSILON
+                && (self.m[i][2].to_f64().unwrap() - other.m[i][2].to_f64().unwrap()).abs()
+                    < EPSILON
+                && (self.m[i][3].to_f64().unwrap() - other.m[i][3].to_f64().unwrap()).abs()
+                    < EPSILON
+            {
+                flag = true;
+            } else {
+                flag = false;
+                break;
+            }
+        }
+        flag
     }
 
     fn ne(&self, other: &Self) -> bool {
-        !self.equal(other)
+        !self.eq(other)
     }
 }
-impl Eq for Matrix4<f64> {}
 
-impl Matrix4<f64> {
-    const ZERO: Matrix4<f64> = Matrix4 {
-        // m: [[0.0; 4]; 4]
-        m: [
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-        ],
-    };
+// Implementation Associated Functions with Crate visibility to compute
+// determinant and cofactor
 
-    const ONE: Matrix4<f64> = Matrix4 {
-        m: [
-            [1.0, 1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0, 1.0],
-        ],
-    };
+impl<P> Matrix4<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
+    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> P {
+        if (row_del + col_del) % 2 == 0 {
+            self.minor(row_del, col_del)
+        } else {
+            -self.minor(row_del, col_del)
+        }
+    }
 
-    const IDENTITY: Matrix4<f64> = Matrix4 {
-        m: [
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ],
-    };
+    pub(crate) fn determinant(self) -> P {
+        let mut det = num::zero();
+        for col in 0..4 {
+            det = det + self.m[0][col] * self.cofactor(0, col);
+        }
+        det
+    }
 
-    pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix3<f64> {
+    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> P {
+        self.submatrix(row_del, col_del).determinant()
+    }
+
+    pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix3<P> {
         let mut res = Matrix3::new();
         let mut r_count = 0;
         let mut c_count = 0;
@@ -153,88 +194,77 @@ impl Matrix4<f64> {
         }
         res
     }
-
-    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> f64 {
-        self.submatrix(row_del, col_del).determinant()
-    }
-
-    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> f64 {
-        if (row_del + col_del) % 2 == 0 {
-            self.minor(row_del, col_del)
-        } else {
-            -self.minor(row_del, col_del)
-        }
-    }
-
-    pub(crate) fn determinant(self) -> f64 {
-        let mut det = 0f64;
-        for col in 0..4 {
-            det = det + self.m[0][col] * self.cofactor(0, col);
-        }
-        det
-    }
 }
 
-/// Provides the capabilities to initialize and transform a Matrix
-pub trait Matrix4Ops<T> {
-    /// .
+/// Trait that provides the capabilities to initialize and transform a Matrix 4x4
+pub trait Matrix4Ops<P> {
+    /// Returns true if one Matrix is equal to another one.
     fn equal(&self, other: &Self) -> bool;
 
-    /// Returns the row of the matrix based on an user-defined index
-    fn get_row(&self, index: Matrix4Index) -> Matrix4Row<T>;
+    /// Returns the row of the matrix based on an user-defined index.
+    fn get_row(&self, index: Matrix4Index) -> Matrix4Row<P>;
 
-    /// Returns the row of the matrix based on an user-defined index
-    fn get_col(&self, index: Matrix4Index) -> Matrix4Col<T>;
+    /// Returns the row of the matrix based on an user-defined index.
+    fn get_col(&self, index: Matrix4Index) -> Matrix4Col<P>;
 
-    /// Returns the new matrix with the data provided by the user.
-    /// If no data is provided the function returns the matrix zero
-    fn new(data: Option<Matrix4Data<T>>) -> Self;
-
-    /// Returns a new identity matrix
+    /// Returns a new identity matrix.
     fn identity() -> Self;
 
-    /// Returns the inverse of a matrix
+    /// Returns the inverse of a matrix.
     fn inverse(self) -> Self;
 
-    /// Returns a new matrix filled with '1'
+    /// Returns the new matrix with the data provided by the user.
+    /// If no data is provided the function returns the matrix filled with '0'.
+    fn new(data: Option<Matrix4Data<P>>) -> Self;
+
+    /// Returns a new matrix filled with '1'.
     fn one() -> Self;
 
     /// Returns rotation matrix around the X axis
-    fn rotate_x(&mut self, radians: T) -> Self;
+    fn rotate_x(&mut self, radians: P) -> Self;
 
     /// Returns rotation matrix around the Y axis
-    fn rotate_y(&mut self, radians: T) -> Self;
+    fn rotate_y(&mut self, radians: P) -> Self;
 
     /// Returns rotation matrix around the Z axis
-    fn rotate_z(&mut self, radians: T) -> Self;
+    fn rotate_z(&mut self, radians: P) -> Self;
 
-    /// Returns the Scaling Matrix
-    fn scale(&mut self, x: T, y: T, z: T) -> Self;
+    /// Returns the scaling matrix.
+    fn scale(&mut self, x: P, y: P, z: P) -> Self;
 
-    /// Returns the Shearing Matrix
-    fn shear(&mut self, xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Self;
+    /// Returns the shearing matrix.
+    fn shear(&mut self, xy: P, xz: P, yx: P, yz: P, zx: P, zy: P) -> Self;
 
-    /// Transposes a Matrix
+    /// Transposes a matrix.
     fn transpose(&mut self) -> Self;
 
-    /// Returns a translation Matrix
-    fn translate(&mut self, x: T, y: T, z: T) -> Self;
+    /// Returns the translation matrix.
+    fn translate(&mut self, x: P, y: P, z: P) -> Self;
 
-    /// Reverts the Matrix into an idenitity matrix
+    /// Reverts the matrix into an idenitity matrix.
     fn to_identity(&mut self) -> Self;
 
-    /// Returns a new matrix filled with '0'
+    /// Returns a new matrix filled with '0'.
     fn zero() -> Self;
 }
 
-impl Matrix4Ops<f64> for Matrix4<f64> {
-    fn equal(&self, other: &Self) -> bool {
+impl<P> Matrix4Ops<P> for Matrix4<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
+    fn equal(&self, other: &Self) -> bool
+    where
+        P: Copy + Num + NumCast,
+    {
         let mut flag = true;
         for i in 0..4 {
-            if (self.m[i][0] - other.m[i][0]).abs() < EPSILON
-                && (self.m[i][1] - other.m[i][1]).abs() < EPSILON
-                && (self.m[i][2] - other.m[i][2]).abs() < EPSILON
-                && (self.m[i][3] - other.m[i][3]).abs() < EPSILON
+            if (self.m[i][0].to_f64().unwrap() - other.m[i][0].to_f64().unwrap()).abs() < EPSILON
+                && (self.m[i][1].to_f64().unwrap() - other.m[i][1].to_f64().unwrap()).abs()
+                    < EPSILON
+                && (self.m[i][2].to_f64().unwrap() - other.m[i][2].to_f64().unwrap()).abs()
+                    < EPSILON
+                && (self.m[i][3].to_f64().unwrap() - other.m[i][3].to_f64().unwrap()).abs()
+                    < EPSILON
             {
                 flag = true;
             } else {
@@ -245,8 +275,8 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         flag
     }
 
-    fn get_row(&self, index: Matrix4Index) -> Matrix4Row<f64> {
-        let mut row: Matrix4Row<f64> = [0.0; 4];
+    fn get_row(&self, index: Matrix4Index) -> Matrix4Row<P> {
+        let mut row: Matrix4Row<P> = [num::zero(); 4];
         match index {
             Matrix4Index::One => {
                 row[0] = self.m[0][0];
@@ -276,8 +306,8 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         row
     }
 
-    fn get_col(&self, index: Matrix4Index) -> Matrix4Col<f64> {
-        let mut col: Matrix4Col<f64> = [0.0; 4];
+    fn get_col(&self, index: Matrix4Index) -> Matrix4Col<P> {
+        let mut col: Matrix4Col<P> = [num::zero(); 4];
         match index {
             Matrix4Index::One => {
                 col[0] = self.m[0][0];
@@ -307,26 +337,21 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         col
     }
 
-    fn new(data: Option<Matrix4Data<f64>>) -> Self {
-        match data {
-            None => Matrix4Ops::zero(),
-            Some(data) => Self { m: data },
-        }
-    }
-
     fn identity() -> Self {
+        let one: P = num::one();
+        let zero: P = num::zero();
         Self {
             m: [
-                [1.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 1.0],
+                [one, zero, zero, zero],
+                [zero, one, zero, zero],
+                [zero, zero, one, zero],
+                [zero, zero, zero, one],
             ],
         }
     }
 
     fn inverse(self) -> Self {
-        if self.determinant() == 0.0 {
+        if self.determinant() == num::zero() {
             panic!("Matrix cannot be inversed");
         } else {
             let mut res = Matrix4::zero();
@@ -341,42 +366,57 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         }
     }
 
+    fn new(data: Option<Matrix4Data<P>>) -> Self {
+        match data {
+            None => Matrix4Ops::zero(),
+            Some(data) => Self { m: data },
+        }
+    }
+
     fn one() -> Self {
-        Self { m: [[1.0; 4]; 4] }
+        Self {
+            m: [[num::one(); 4]; 4],
+        }
     }
 
-    fn rotate_x(&mut self, radians: f64) -> Self {
-        let mut res = Matrix4::IDENTITY;
-        res.m[1][1] = radians.cos();
-        res.m[1][2] = -radians.sin();
-        res.m[2][1] = radians.sin();
-        res.m[2][2] = radians.cos();
+    fn rotate_x(&mut self, radians: P) -> Self {
+        let mut res = Matrix4::identity();
+        let p_cos = P::from(radians.to_f64().unwrap().cos()).unwrap();
+        let p_sin = P::from(radians.to_f64().unwrap().sin()).unwrap();
+        res.m[1][1] = p_cos;
+        res.m[1][2] = -p_sin;
+        res.m[2][1] = p_sin;
+        res.m[2][2] = p_cos;
         *self = res * *self;
         *self
     }
 
-    fn rotate_y(&mut self, radians: f64) -> Self {
-        let mut res = Matrix4::IDENTITY;
-        res.m[0][0] = radians.cos();
-        res.m[0][2] = radians.sin();
-        res.m[2][0] = -radians.sin();
-        res.m[2][2] = radians.cos();
+    fn rotate_y(&mut self, radians: P) -> Self {
+        let mut res = Matrix4::identity();
+        let p_cos = P::from(radians.to_f64().unwrap().cos()).unwrap();
+        let p_sin = P::from(radians.to_f64().unwrap().sin()).unwrap();
+        res.m[0][0] = p_cos;
+        res.m[0][2] = p_sin;
+        res.m[2][0] = -p_sin;
+        res.m[2][2] = p_cos;
         *self = res * *self;
         *self
     }
 
-    fn rotate_z(&mut self, radians: f64) -> Self {
-        let mut res = Matrix4::IDENTITY;
-        res.m[0][0] = radians.cos();
-        res.m[0][1] = -radians.sin();
-        res.m[1][0] = radians.sin();
-        res.m[1][1] = radians.cos();
+    fn rotate_z(&mut self, radians: P) -> Self {
+        let mut res = Matrix4::identity();
+        let p_cos = P::from(radians.to_f64().unwrap().cos()).unwrap();
+        let p_sin = P::from(radians.to_f64().unwrap().sin()).unwrap();
+        res.m[0][0] = p_cos;
+        res.m[0][1] = -p_sin;
+        res.m[1][0] = p_sin;
+        res.m[1][1] = p_cos;
         *self = res * *self;
         *self
     }
 
-    fn scale(&mut self, x: f64, y: f64, z: f64) -> Self {
-        let mut res = Matrix4::IDENTITY;
+    fn scale(&mut self, x: P, y: P, z: P) -> Self {
+        let mut res = Matrix4::identity();
         res.m[0][0] = x;
         res.m[1][1] = y;
         res.m[2][2] = z;
@@ -384,8 +424,8 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         *self
     }
 
-    fn shear(&mut self, xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Self {
-        let mut res = Matrix4::IDENTITY;
+    fn shear(&mut self, xy: P, xz: P, yx: P, yz: P, zx: P, zy: P) -> Self {
+        let mut res = Matrix4::identity();
         res.m[0][1] = xy;
         res.m[0][2] = xz;
         res.m[1][0] = yx;
@@ -397,7 +437,7 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
     }
 
     fn transpose(&mut self) -> Self {
-        let mut res = Matrix4::ZERO;
+        let mut res = Matrix4::zero();
         for row in 0..4 {
             res.m[0][row] = self.m[row][0];
             res.m[1][row] = self.m[row][1];
@@ -408,8 +448,8 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
         *self
     }
 
-    fn translate(&mut self, x: f64, y: f64, z: f64) -> Self {
-        let mut res = Matrix4::IDENTITY;
+    fn translate(&mut self, x: P, y: P, z: P) -> Self {
+        let mut res = Matrix4::identity();
         res.m[0][3] = x;
         res.m[1][3] = y;
         res.m[2][3] = z;
@@ -418,17 +458,24 @@ impl Matrix4Ops<f64> for Matrix4<f64> {
     }
 
     fn to_identity(&mut self) -> Self {
-        *self = Matrix4::IDENTITY;
+        *self = Matrix4::identity();
         *self
     }
 
     fn zero() -> Self {
-        Self { m: [[0.0; 4]; 4] }
+        Self {
+            m: [[num::zero(); 4]; 4],
+        }
     }
 }
 
-impl Mul for Matrix4<f64> {
-    type Output = Matrix4<f64>;
+// -- Implementation of Opeperator Overloading
+
+impl<P> Mul for Matrix4<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
+    type Output = Matrix4<P>;
 
     fn mul(self, rhs: Self) -> Self {
         let mut m_res = Matrix4::zero();
@@ -444,7 +491,10 @@ impl Mul for Matrix4<f64> {
     }
 }
 
-impl MulAssign for Matrix4<f64> {
+impl<P> MulAssign for Matrix4<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
     fn mul_assign(&mut self, rhs: Self) {
         for row in 0..4 {
             for col in 0..4 {
@@ -457,10 +507,13 @@ impl MulAssign for Matrix4<f64> {
     }
 }
 
-impl Mul<Vector3<f64>> for Matrix4<f64> {
-    type Output = Vector3<f64>;
+impl<P> Mul<Vector3<P>> for Matrix4<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
+    type Output = Vector3<P>;
 
-    fn mul(self, rhs: Vector3<f64>) -> Vector3<f64> {
+    fn mul(self, rhs: Vector3<P>) -> Vector3<P> {
         let mut v_res = Vector3::zero();
         for row in 0..4 {
             match row {
@@ -495,11 +548,14 @@ impl Mul<Vector3<f64>> for Matrix4<f64> {
     }
 }
 
-impl Mul<Point3<f64>> for Matrix4<f64> {
-    type Output = Point3<f64>;
+impl<P> Mul<Point3<P>> for Matrix4<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
+    type Output = Point3<P>;
 
-    fn mul(self, rhs: Point3<f64>) -> Point3<f64> {
-        let mut v_res = Point3::all(0.0);
+    fn mul(self, rhs: Point3<P>) -> Point3<P> {
+        let mut v_res = Point3::all(num::zero());
         for row in 0..4 {
             match row {
                 0 => {
@@ -533,10 +589,13 @@ impl Mul<Point3<f64>> for Matrix4<f64> {
     }
 }
 
-impl Mul<Matrix4<f64>> for Vector3<f64> {
-    type Output = Vector3<f64>;
+impl<P> Mul<Matrix4<P>> for Vector3<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
+    type Output = Vector3<P>;
 
-    fn mul(self, rhs: Matrix4<f64>) -> Vector3<f64> {
+    fn mul(self, rhs: Matrix4<P>) -> Vector3<P> {
         let mut v_res = Vector3::zero();
         for row in 0..4 {
             match row {
@@ -571,11 +630,14 @@ impl Mul<Matrix4<f64>> for Vector3<f64> {
     }
 }
 
-impl Mul<Matrix4<f64>> for Point3<f64> {
-    type Output = Point3<f64>;
+impl<P> Mul<Matrix4<P>> for Point3<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
+    type Output = Point3<P>;
 
-    fn mul(self, rhs: Matrix4<f64>) -> Point3<f64> {
-        let mut v_res = Point3::all(0.0);
+    fn mul(self, rhs: Matrix4<P>) -> Point3<P> {
+        let mut v_res = Point3::all(num::zero());
         for row in 0..4 {
             match row {
                 0 => {
@@ -609,21 +671,32 @@ impl Mul<Matrix4<f64>> for Point3<f64> {
     }
 }
 
-impl Matrix2<f64> {
+// Implementation of Matrix2 operations to calculate a determinant.
+impl<P> Matrix2<P>
+where
+    P: Copy + Num + NumCast,
+{
     pub(crate) fn new() -> Self {
-        Self { m: [[0f64; 2]; 2] }
+        let zero: P = num::zero();
+        Self { m: [[zero; 2]; 2] }
     }
-    pub(crate) fn determinant(self) -> f64 {
+
+    pub(crate) fn determinant(self) -> P {
         self.m[0][0] * self.m[1][1] - self.m[0][1] * self.m[1][0]
     }
 }
 
-impl Matrix3<f64> {
+// Implementation of Matrix3 operations to calculate a determinant and submatrix.
+impl<P> Matrix3<P>
+where
+    P: Copy + Num + NumCast + Neg + Neg<Output = P>,
+{
     pub(crate) fn new() -> Self {
-        Self { m: [[0f64; 3]; 3] }
+        let zero: P = num::zero();
+        Self { m: [[zero; 3]; 3] }
     }
 
-    pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix2<f64> {
+    pub(crate) fn submatrix(self, row_del: usize, col_del: usize) -> Matrix2<P> {
         let mut res = Matrix2::new();
         let mut r_count = 0;
         let mut c_count = 0;
@@ -643,11 +716,11 @@ impl Matrix3<f64> {
         res
     }
 
-    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> f64 {
+    pub(crate) fn minor(self, row_del: usize, col_del: usize) -> P {
         self.submatrix(row_del, col_del).determinant()
     }
 
-    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> f64 {
+    pub(crate) fn cofactor(self, row_del: usize, col_del: usize) -> P {
         if (row_del + col_del) % 2 == 0 {
             self.minor(row_del, col_del)
         } else {
@@ -655,8 +728,8 @@ impl Matrix3<f64> {
         }
     }
 
-    pub(crate) fn determinant(self) -> f64 {
-        let mut det = 0f64;
+    pub(crate) fn determinant(self) -> P {
+        let mut det = num::zero();
         for col in 0..3 {
             det = det + self.m[0][col] * self.cofactor(0, col);
         }

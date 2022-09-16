@@ -18,13 +18,13 @@ use super::*;
 /// Unit tests for Matrix4 types.
 #[test]
 fn test_matrix_creation() {
-    println!("{}", Matrix4::ZERO);
+    println!("{}", Matrix4::<f64>::zero());
 
-    let m_one = Matrix4::one();
+    let m_one = Matrix4::<f64>::one();
     println!("{}", m_one);
-    let m_zero = Matrix4::zero();
+    let m_zero = Matrix4::<f64>::zero();
     println!("{}", m_zero);
-    let m_iden = Matrix4::identity();
+    let m_iden = Matrix4::<f64>::identity();
     println!("{}", m_iden);
 
     let m1 = Matrix4::new(Some([
@@ -48,7 +48,7 @@ fn test_matrix_creation() {
     ]));
     println!("{}", m2);
 
-    let m3 = Matrix4::new(None);
+    let m3 = Matrix4::<f64>::new(None);
     println!("{}", m3);
 }
 
