@@ -7,7 +7,7 @@
 // except according to those terms.
 
 /**
-Data structure and operations for the Canvas and Pixel types
+Data structure and operations for the Canvas and Pixel types.
 */
 use std::fmt::Display;
 use std::fs::OpenOptions;
@@ -20,25 +20,26 @@ use crate::picture::colors::*;
 #[cfg(test)]
 mod tests;
 
-/// .
+/// Defines the structure of a pixel in a Canvas, with X and Y coordinates filled with Color.
 #[derive(Debug, Copy, Clone)]
 pub struct Pixel {
-    /// .
+    /// X coordinate.
     pub(crate) x: usize,
-    /// .
+    /// Y coordinate.
     pub(crate) y: usize,
-    /// .
+    /// Color for the pixel.  
     pub(crate) color: ColorRgb,
 }
 
 #[derive(Debug)]
-/// .
+/// Defines the structure of a Canvas to be filled with pixels and written to an image format.
 pub struct Canvas {
-    /// .
+    /// Width of the Canvas.
     pub width: usize,
-    /// .
+    /// Height of the Canvas.
     pub height: usize,
-    /// .
+    /// Dynamic 2D matrix of data holding the pixel data in the Canvas.
+    /// This data is written to the output image format.
     pub data: Vec<Vec<ColorRgb>>,
 }
 
@@ -77,8 +78,7 @@ impl Display for Pixel {
 }
 
 impl Canvas {
-    /// Creates a new of specified Width and Height
-    /// Returs the new Canvas filled with black pixels.
+    /// Creates a new Canvas of specified Width and Height filled with black pixels.
     pub fn new(width: usize, height: usize) -> Canvas {
         Canvas {
             width,
@@ -93,11 +93,11 @@ impl Canvas {
         // In order to transform to Canvas coordinates we need to
         // substract the canvas height from the pixel.y position
         // The '-1' is to not get an out of bounds error on the vector for the
-        // first iteration
+        // first iteration.
         self.data[pixel.x][self.height - 1 - pixel.y] = pixel.color;
     }
 
-    // Iterates over the Canvas.data[[]] vector and generates a
+    /// Iterates over the Canvas.data[[]] vector and generates a
     /// PPM file with the proper format
     pub fn write_to_ppm(&self, file_name: &Path) {
         let mut image = OpenOptions::new()

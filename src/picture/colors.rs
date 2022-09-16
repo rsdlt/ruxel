@@ -61,7 +61,7 @@ impl PartialEq for ColorRgb {
 }
 impl Eq for ColorRgb {}
 
-/// Enables effective Color initialization
+/// Trait that enables Color initialization
 pub trait ColorInit<T> {
     /// .
     fn new(r: f64, g: f64, b: f64) -> T;

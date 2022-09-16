@@ -1,2 +1,3 @@
-# ruxel
-A simple ray tracer and renderer built with Rust
+# Ruxel
+
+A little ray tracer and renderer built with Rust.
