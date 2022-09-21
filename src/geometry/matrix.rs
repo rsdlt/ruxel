@@ -541,7 +541,7 @@ where
                         + self.m[row][2] * rhs.z
                         + self.m[row][3] * rhs.w;
                 }
-                _ => panic!("Something wild happened..."),
+                _ => unreachable!("Out of the loop..."),
             }
         }
         v_res
@@ -582,7 +582,7 @@ where
                         + self.m[row][2] * rhs.z
                         + self.m[row][3] * rhs.w;
                 }
-                _ => panic!("Something wild happened..."),
+                _ => unreachable!("Out of the loop..."),
             }
         }
         v_res
@@ -623,7 +623,7 @@ where
                         + rhs.m[row][2] * self.z
                         + rhs.m[row][3] * self.w
                 }
-                _ => panic!("Something wild happened"),
+                _ => unreachable!("Out of the loop"),
             }
         }
         v_res
@@ -664,7 +664,7 @@ where
                         + rhs.m[row][2] * self.z
                         + rhs.m[row][3] * self.w
                 }
-                _ => panic!("Something wild happened"),
+                _ => unreachable!("Out of  the loop..."),
             }
         }
         v_res
