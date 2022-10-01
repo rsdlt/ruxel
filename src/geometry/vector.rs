@@ -49,120 +49,103 @@ pub struct Point3<P> {
 }
 
 /// Trait that provides Vector and Point common initialization capabilities.
-pub trait Tuple<P> {
+pub trait Tuple<P>
+where
+    P: Copy + Num,
+{
     /// Initialize a Vector or Point with all its axis with the same user-defined value.
-    fn all(all: P) -> Self
-    where
-        P: Copy + Num;
+    fn all(all: P) -> Self;
 
     /// Initialize a Vector or Point with each axis with a separate user-defined value.
-    fn new(x: P, y: P, z: P) -> Self
-    where
-        P: Copy + Num;
+    fn new(x: P, y: P, z: P) -> Self;
 
     /// Initialize a Vector or Point with the X coordinate axis with a user-defined value.
-    fn x_coord(x_val: P) -> Self
-    where
-        P: Copy + Num;
+    fn x_coord(x_val: P) -> Self;
 
     /// Initialize a Vector or Point with the Y coordinate axis with a user-defined value.
-    fn y_coord(y_val: P) -> Self
-    where
-        P: Copy + Num;
+    fn y_coord(y_val: P) -> Self;
 
     /// Initialize a Vector or Point with the Z coordinate axis with a user-defined value.
-    fn z_coord(z_val: P) -> Self
-    where
-        P: Copy + Num;
+    fn z_coord(z_val: P) -> Self;
 }
 
 /// Trait that provides Vector capabilities.
-pub trait Vector<P>: Tuple<P> {
+pub trait Vector<P>: Tuple<P>
+where
+    P: Copy + Num,
+{
     /// Initialize a Vector with all the coordinates with a value of '1'.
-    fn one() -> Self
-    where
-        P: Copy + Num;
+    fn one() -> Self;
 
     /// Initialize a Vector with all the coordinates with a value of '0'.
-    fn zero() -> Self
-    where
-        P: Copy + Num;
+    fn zero() -> Self;
 
     /// Initialize a Vector with the Z coordinate with a value of '-1'.
     fn back() -> Self
     where
-        P: Copy + Num + Neg + Neg<Output = P>;
+        P: Neg + Neg<Output = P>;
 
     /// Initialize a Vector with the Y coordinate with a value of '-1'.
     fn down() -> Self
     where
-        P: Copy + Num + Neg + Neg<Output = P>;
+        P: Neg + Neg<Output = P>;
 
     /// Initialize a Vector with the Z coordinate with a value of '1'.
-    fn forward() -> Self
-    where
-        P: Copy + Num;
+    fn forward() -> Self;
 
     /// Initialize a Vector with the X coordinate with a value of '-1'.
     fn left() -> Self
     where
-        P: Copy + Num + Neg + Neg<Output = P>;
+        P: Neg + Neg<Output = P>;
 
     /// Initialize a Vector with the X coordinate with a value of '1'.
-    fn right() -> Self
-    where
-        P: Copy + Num;
+    fn right() -> Self;
 
     /// Initialize a Vector with the Y coordinate with a value of '1'.
-    fn up() -> Self
-    where
-        P: Copy + Num;
+    fn up() -> Self;
 
     /// Normalize a Vector by dividing it by its Magnitude.
     fn normalized(&mut self) -> Self
     where
-        P: Copy + Num + NumCast;
+        P: NumCast;
 
     /// Return the information of the smallest coordinate value.
     fn min_component(&self) -> (i8, char, P)
     where
-        P: Copy + PartialOrd;
+        P: PartialOrd;
 
     /// Return the information of the largest coordinate value.
     fn max_component(&self) -> (i8, char, P)
     where
-        P: Copy + PartialOrd;
+        P: PartialOrd;
 
     /// Calculate the magnitude of a Vector.
     fn magnitude(&self) -> P
     where
-        P: Copy + Num + NumCast;
+        P: NumCast;
 
     /// Calculate the Cross product between two Vectors.
-    fn cross(lhs: Vector3<P>, rhs: Vector3<P>) -> Vector3<P>
-    where
-        P: Copy + Num;
+    fn cross(lhs: Vector3<P>, rhs: Vector3<P>) -> Vector3<P>;
 
     /// Calculate the Dot product between two Vectors.
-    fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P
-    where
-        P: Copy + Num;
+    fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P;
 }
 
 /// Trait that provides Point capabilities.
-pub trait Point<P>: Tuple<P> {
+pub trait Point<P>: Tuple<P>
+where
+    P: Copy + Num,
+{
     /// Set a Point with all its coordinates with a value of '0'.
-    fn origin(&mut self) -> Self
-    where
-        P: Copy + Num;
+    fn origin(&mut self) -> Self;
 }
 
 // Implementation of the Tuple Supertrait for Vector.
-impl<P> Tuple<P> for Vector3<P> {
-    fn all(all: P) -> Self
-    where
-        P: Copy + Num,
-    {
+impl<P> Tuple<P> for Vector3<P>
+where
+    P: Copy + Num,
+{
+    fn all(all: P) -> Self {
         Vector3 {
             x: num::one::<P>() * all,
             y: num::one::<P>() * all,
@@ -171,10 +154,7 @@ impl<P> Tuple<P> for Vector3<P> {
         }
     }
 
-    fn new(x: P, y: P, z: P) -> Vector3<P>
-    where
-        P: Copy + Num,
-    {
+    fn new(x: P, y: P, z: P) -> Vector3<P> {
         Vector3 {
             x,
             y,
@@ -183,10 +163,7 @@ impl<P> Tuple<P> for Vector3<P> {
         }
     }
 
-    fn x_coord(x_val: P) -> Self
-    where
-        P: Copy + Num,
-    {
+    fn x_coord(x_val: P) -> Self {
         Vector3 {
             x: num::one::<P>() * x_val,
             y: num::zero::<P>(),
@@ -195,10 +172,7 @@ impl<P> Tuple<P> for Vector3<P> {
         }
     }
 
-    fn y_coord(y_val: P) -> Self
-    where
-        P: Copy + Num,
-    {
+    fn y_coord(y_val: P) -> Self {
         Vector3 {
             x: num::zero::<P>(),
             y: num::one::<P>() * y_val,
@@ -207,10 +181,7 @@ impl<P> Tuple<P> for Vector3<P> {
         }
     }
 
-    fn z_coord(z_val: P) -> Self
-    where
-        P: Copy + Num,
-    {
+    fn z_coord(z_val: P) -> Self {
         Vector3 {
             x: num::zero::<P>(),
             y: num::zero::<P>(),
@@ -221,11 +192,11 @@ impl<P> Tuple<P> for Vector3<P> {
 }
 
 // Implementation of the Tuple Supertrait for Point.
-impl<P> Tuple<P> for Point3<P> {
-    fn new(x: P, y: P, z: P) -> Self
-    where
-        P: Copy + Num,
-    {
+impl<P> Tuple<P> for Point3<P>
+where
+    P: Copy + Num,
+{
+    fn new(x: P, y: P, z: P) -> Self {
         Point3 {
             x,
             y,
@@ -234,10 +205,7 @@ impl<P> Tuple<P> for Point3<P> {
         }
     }
 
-    fn all(all: P) -> Self
-    where
-        P: Copy + Num,
-    {
+    fn all(all: P) -> Self {
         Point3 {
             x: num::one::<P>() * all,
             y: num::one::<P>() * all,
@@ -247,10 +215,7 @@ impl<P> Tuple<P> for Point3<P> {
     }
 
     // returns a tuple with [1 * x_val,0,0]
-    fn x_coord(x_val: P) -> Self
-    where
-        P: Copy + Num,
-    {
+    fn x_coord(x_val: P) -> Self {
         Point3 {
             x: num::one::<P>() * x_val,
             y: num::zero::<P>(),
@@ -259,10 +224,7 @@ impl<P> Tuple<P> for Point3<P> {
         }
     }
 
-    fn y_coord(y_val: P) -> Self
-    where
-        P: Copy + Num,
-    {
+    fn y_coord(y_val: P) -> Self {
         Point3 {
             x: num::zero::<P>(),
             y: num::one::<P>() * y_val,
@@ -271,10 +233,7 @@ impl<P> Tuple<P> for Point3<P> {
         }
     }
 
-    fn z_coord(z_val: P) -> Self
-    where
-        P: Copy + Num,
-    {
+    fn z_coord(z_val: P) -> Self {
         Point3 {
             x: num::zero::<P>(),
             y: num::zero::<P>(),
@@ -285,11 +244,11 @@ impl<P> Tuple<P> for Point3<P> {
 }
 
 // Implementation of the Point subtrait capabilities.
-impl<P> Point<P> for Point3<P> {
-    fn origin(&mut self) -> Self
-    where
-        P: Copy + Num,
-    {
+impl<P> Point<P> for Point3<P>
+where
+    P: Copy + Num,
+{
+    fn origin(&mut self) -> Self {
         Point3 {
             x: num::zero(),
             y: num::zero(),
@@ -300,11 +259,11 @@ impl<P> Point<P> for Point3<P> {
 }
 
 // Implemenation of the Vector subtrait capabilitites.
-impl<P> Vector<P> for Vector3<P> {
-    fn one() -> Self
-    where
-        P: Copy + Num,
-    {
+impl<P> Vector<P> for Vector3<P>
+where
+    P: Copy + Num,
+{
+    fn one() -> Self {
         Vector3 {
             x: num::one(),
             y: num::one(),
@@ -313,10 +272,7 @@ impl<P> Vector<P> for Vector3<P> {
         }
     }
 
-    fn zero() -> Self
-    where
-        P: Copy + Num,
-    {
+    fn zero() -> Self {
         Vector3 {
             x: num::zero(),
             y: num::zero(),
@@ -327,7 +283,7 @@ impl<P> Vector<P> for Vector3<P> {
 
     fn back() -> Self
     where
-        P: Copy + Num + Neg + Neg<Output = P>,
+        P: Neg + Neg<Output = P>,
     {
         Vector3 {
             x: num::zero(),
@@ -339,7 +295,7 @@ impl<P> Vector<P> for Vector3<P> {
 
     fn down() -> Self
     where
-        P: Copy + Num + Neg + Neg<Output = P>,
+        P: Neg + Neg<Output = P>,
     {
         Vector3 {
             x: num::zero(),
@@ -349,10 +305,7 @@ impl<P> Vector<P> for Vector3<P> {
         }
     }
 
-    fn forward() -> Self
-    where
-        P: Copy + Num,
-    {
+    fn forward() -> Self {
         Vector3 {
             x: num::zero(),
             y: num::zero(),
@@ -363,7 +316,7 @@ impl<P> Vector<P> for Vector3<P> {
 
     fn left() -> Self
     where
-        P: Copy + Num + Neg + Neg<Output = P>,
+        P: Neg + Neg<Output = P>,
     {
         Vector3 {
             x: -num::one::<P>(),
@@ -373,10 +326,7 @@ impl<P> Vector<P> for Vector3<P> {
         }
     }
 
-    fn right() -> Self
-    where
-        P: Copy + Num,
-    {
+    fn right() -> Self {
         Vector3 {
             x: num::one(),
             y: num::zero(),
@@ -385,10 +335,7 @@ impl<P> Vector<P> for Vector3<P> {
         }
     }
 
-    fn up() -> Self
-    where
-        P: Copy + Num,
-    {
+    fn up() -> Self {
         Vector3 {
             x: num::zero(),
             y: num::one(),
@@ -399,7 +346,7 @@ impl<P> Vector<P> for Vector3<P> {
 
     fn normalized(&mut self) -> Self
     where
-        P: Copy + Num + NumCast,
+        P: NumCast,
     {
         let mag = self.magnitude();
         Self {
@@ -412,7 +359,7 @@ impl<P> Vector<P> for Vector3<P> {
 
     fn min_component(&self) -> (i8, char, P)
     where
-        P: Copy + PartialOrd,
+        P: PartialOrd,
     {
         if self.x <= self.y && self.x <= self.z {
             (0, 'x', self.x)
@@ -425,7 +372,7 @@ impl<P> Vector<P> for Vector3<P> {
 
     fn max_component(&self) -> (i8, char, P)
     where
-        P: Copy + PartialOrd,
+        P: PartialOrd,
     {
         if self.x >= self.y && self.x >= self.z {
             (0, 'x', self.x)
@@ -438,7 +385,7 @@ impl<P> Vector<P> for Vector3<P> {
 
     fn magnitude(&self) -> P
     where
-        P: Copy + Num + NumCast,
+        P: NumCast,
     {
         P::from(
             (self.x * self.x + self.y * self.y + self.z * self.z)
@@ -449,10 +396,7 @@ impl<P> Vector<P> for Vector3<P> {
         .unwrap()
     }
 
-    fn cross(lhs: Vector3<P>, rhs: Vector3<P>) -> Vector3<P>
-    where
-        P: Copy + Num,
-    {
+    fn cross(lhs: Vector3<P>, rhs: Vector3<P>) -> Vector3<P> {
         Vector3 {
             x: lhs.y * rhs.z - lhs.z * rhs.y,
             y: lhs.z * rhs.x - lhs.x * rhs.z,
@@ -461,10 +405,7 @@ impl<P> Vector<P> for Vector3<P> {
         }
     }
 
-    fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P
-    where
-        P: Copy + Num,
-    {
+    fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P {
         lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
     }
 }
