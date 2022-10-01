@@ -252,10 +252,7 @@ impl<P> Matrix4Ops<P> for Matrix4<P>
 where
     P: Copy + Num + NumCast + Neg + Neg<Output = P>,
 {
-    fn equal(&self, other: &Self) -> bool
-    where
-        P: Copy + Num + NumCast,
-    {
+    fn equal(&self, other: &Self) -> bool {
         let mut flag = true;
         for i in 0..4 {
             if (self.m[i][0].to_f64().unwrap() - other.m[i][0].to_f64().unwrap()).abs() < EPSILON
