@@ -13,7 +13,7 @@ use super::*;
 
 #[test]
 // This test checks for the integrity of the Colors initialization
-fn test_color_initialization() {
+fn ut_colors_initialization() {
     let red = ColorRgb::red();
     let black = ColorRgb::black();
     let white = ColorRgb::white();
@@ -31,7 +31,7 @@ fn test_color_initialization() {
 }
 #[test]
 // This test checks for the integrity of Add, AddAssing, Sub, SubAssign, Mul and MulAssing
-fn test_color_operator_overloading() {
+fn ut_colors_operator_overloading() {
     let c1 = ColorRgb::new(0.9, 0.6, 0.75);
     let c2 = ColorRgb::new(0.7, 0.1, 0.25);
     assert_eq!(c1 + c2, ColorRgb::new(1.6, 0.7, 1.0));

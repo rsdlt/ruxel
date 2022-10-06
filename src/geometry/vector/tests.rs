@@ -11,7 +11,7 @@ use super::*;
 
 #[test]
 // This test validates the construction of the Vector3 and Point3 types
-fn vector_and_point_construction_integrity() {
+fn ut_vector_and_point_construction_integrity() {
     let v_one = Vector3::one();
     let v_zero = Vector3::zero();
     let v_back = Vector3::back();
@@ -96,7 +96,7 @@ fn vector_and_point_construction_integrity() {
 
 #[test]
 // This test validates the operation overloading Add, Sub, Div, Equality, Mul, Neg, AddAssign, SubAssign  for the Vector3 and Point3
-fn vector_and_point_operator_overloading_integrity() {
+fn ut_vector_and_point_operator_overloading_integrity() {
     let v1 = Vector3::new(2.0, 3.5, 4.0);
     let v2 = Vector3::new(3.0, 7.5, 8.0);
     let v3 = Vector3::new(2.55555, 7.88888, 9.34343);
@@ -160,7 +160,7 @@ fn vector_and_point_operator_overloading_integrity() {
 
 #[test]
 // This test validates the implementation of the fuctions in the VecOps trait
-fn vector_common_operations_integrity() {
+fn ut_vector_common_operations_integrity() {
     // Magnitude
     let v1 = Vector3::new(1.0, 2.0, 3.0);
     assert_eq!(v1.magnitude(), 14f64.sqrt());
@@ -181,7 +181,7 @@ fn vector_common_operations_integrity() {
 
 #[test]
 // This test validates integrity by simulating a rocket launch
-fn simulate_rocket_lauch() {
+fn ut_vector_simulate_rocket_lauch() {
     #[derive(Debug)]
     struct Projectile {
         position: Point3<f64>,

@@ -17,7 +17,7 @@ use super::*;
 
 /// Unit tests for Matrix4 types.
 #[test]
-fn test_matrix_creation() {
+fn ut_matrix_creation() {
     println!("{}", Matrix4::<f64>::zero());
 
     let m_one = Matrix4::<f64>::one();
@@ -53,7 +53,7 @@ fn test_matrix_creation() {
 }
 
 #[test]
-fn test_matrix_equality() {
+fn ut_matrix_equality() {
     let m1 = Matrix4::new(Some([
         [34.7777f64, 86.9876f64, 44.552f64, 51.213f64],
         [16.3014f64, 98.8141f64, 53.107f64, 33.649f64],
@@ -73,7 +73,7 @@ fn test_matrix_equality() {
 }
 
 #[test]
-fn test_matrix_multiplication() {
+fn ut_matrix_multiplication() {
     let m1 = Matrix4::new(Some([
         [1f64, 2f64, 3f64, 4f64],
         [5f64, 6f64, 7f64, 8f64],
@@ -116,7 +116,7 @@ fn test_matrix_multiplication() {
 }
 
 #[test]
-fn test_matrix_transpose() {
+fn ut_matrix_transpose() {
     let mut m1 = Matrix4::new(Some([
         [0f64, 9f64, 3f64, 0f64],
         [9f64, 8f64, 0f64, 8f64],
@@ -128,7 +128,7 @@ fn test_matrix_transpose() {
 }
 
 #[test]
-fn test_submatrix_minor_cofactor() {
+fn ut_matrix_submatrix_minor_cofactor() {
     let mut mx2 = Matrix2::new();
     mx2.m[0][0] = 1f64;
     mx2.m[0][1] = 5f64;
@@ -195,7 +195,7 @@ fn test_submatrix_minor_cofactor() {
 }
 
 #[test]
-fn test_matrix_determinant() {
+fn ut_matrix_determinant() {
     let mut mx3 = Matrix3::new();
     mx3.m[0][0] = 1f64;
     mx3.m[0][1] = 2f64;
@@ -225,7 +225,7 @@ fn test_matrix_determinant() {
 }
 
 #[test]
-fn test_matrix_inversion() {
+fn ut_matrix_inversion() {
     let m1 = Matrix4::new(Some([
         [6f64, 4f64, 4f64, 4f64],
         [5f64, 5f64, 7f64, 6f64],
@@ -281,7 +281,7 @@ fn test_matrix_inversion() {
 
 #[test]
 // Test the different matrix transformations and chaining of transformations
-fn test_matrix_transformations() {
+fn ut_matrix_transformations() {
     // Translations
     let mut m = Matrix4::identity();
     let p = Point3::new(-3.0, 4.0, 5.0);
@@ -396,7 +396,7 @@ fn test_matrix_transformations() {
 }
 
 #[test]
-fn matrix_clock_exercise() {
+fn ut_matrix_clock_exercise() {
     let pix = Point3::new(0.0, 0.0, 1.0);
     let hr = PI / 6.0;
     let mut m = Matrix4::identity();

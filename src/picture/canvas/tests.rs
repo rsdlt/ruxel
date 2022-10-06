@@ -12,7 +12,7 @@ use std::path::Path;
 
 #[test]
 // This test validates the writing of a Canvas
-fn test_print_to_ppm() {
+fn ut_canvas_print_to_ppm() {
     let image_path = Path::new("images/test_path_to_print.ppm");
     let mut canvas = Canvas::new(5, 3);
     let c1 = ColorRgb::new(0.5, 0.0, 0.0);
@@ -25,7 +25,7 @@ fn test_print_to_ppm() {
 }
 #[test]
 // This test validates the printing of a rocket trayectory using Vector and colors in a PPM Canvas
-fn test_projectile_launch_canvas() {
+fn ut_canvas_projectile_launch_canvas() {
     // Bring Geometry module into scope for this test
     use crate::geometry::vector::*;
 

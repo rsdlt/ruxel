@@ -7,11 +7,11 @@
 // except according to those terms.
 
 use crate::shapes::*;
+use num::{Num, NumCast};
 /**
  Data structures and methods for Ray and Intersection computations
 */
 use std::fmt::Display;
-
 // Unit tests for Ray
 #[cfg(test)]
 mod tests;
@@ -39,7 +39,10 @@ pub struct Intersection {
     pub t: f64,
 }
 
-impl Display for Ray<f64> {
+impl<P> Display for Ray<P>
+where
+    P: Num + Copy + Display,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = format!("ray:\nogn->{}\tdir->{}", self.origin, self.direction);
         f.write_str(&s)
@@ -47,25 +50,31 @@ impl Display for Ray<f64> {
 }
 
 /// A trait that provides capabilities to initialize a Ray
-pub trait RayInit<T> {
+pub trait RayInit<P> {
     /// .
-    fn new(origin: Point3<T>, direction: Vector3<T>) -> Self;
+    fn new(origin: Point3<P>, direction: Vector3<P>) -> Self;
 }
 
-impl RayInit<f64> for Ray<f64> {
-    fn new(origin: Point3<f64>, direction: Vector3<f64>) -> Self {
+impl<P> RayInit<P> for Ray<P>
+where
+    P: Num + Copy,
+{
+    fn new(origin: Point3<P>, direction: Vector3<P>) -> Self {
         Self { origin, direction }
     }
 }
 
 /// A trait that provides common operations for Rays
-pub trait RayOps<T> {
+pub trait RayOps<P> {
     /// .
-    fn position(ray: Ray<T>, t: T) -> Point3<T>;
+    fn position(ray: Ray<P>, t: P) -> Point3<P>;
 }
 
-impl RayOps<f64> for Ray<f64> {
-    fn position(ray: Ray<f64>, t: f64) -> Point3<f64> {
+impl<P> RayOps<P> for Ray<P>
+where
+    P: Copy + Num,
+{
+    fn position(ray: Ray<P>, t: P) -> Point3<P> {
         ray.origin + ray.direction * t
     }
 }

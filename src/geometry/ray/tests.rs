@@ -18,13 +18,15 @@ use crate::shapes::core::Sphere;
 
 /// Unit tests for Ray types.
 #[test]
-fn test_ray_initialization() {
+fn ut_ray_initialization() {
     let ray = Ray::new(Point3::y_coord(1.0), Vector3::down());
+    println!("{}", ray);
+    let ray = Ray::new(Point3::new(1, 2, 3), Vector3::new(1, 2, 3));
     println!("{}", ray);
 }
 
 #[test]
-fn test_ray_position() {
+fn ut_ray_position() {
     let ray = Ray::new(Point3::new(2.0, 3.0, 4.0), Vector3::right());
     assert_eq!(Ray::position(ray, 0.0), Point3::new(2.0, 3.0, 4.0));
     assert_eq!(Ray::position(ray, 1.0), Point3::new(3.0, 3.0, 4.0));
@@ -33,7 +35,7 @@ fn test_ray_position() {
 }
 
 #[test]
-fn test_ray_intersect_sphere() {
+fn ut_ray_intersect_sphere() {
     // Intersects at two points
     let r = Ray::new(Point3::new(0.0, 0.0, -5.0), Vector3::new(0.0, 0.0, 1.0));
     let s = Sphere::new_unit();
@@ -66,4 +68,4 @@ fn test_ray_intersect_sphere() {
 }
 
 #[test]
-fn test_intersection() {}
+fn ut_test_intersection() {}
