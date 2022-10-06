@@ -9,13 +9,33 @@
 /**
 The Shapes module implements the functionality for Core shapes like Circle, Cylinder, Cube, and for External shapes from import of *.OBJ files or other formats
 */
+use num::{Num, NumCast};
+
+use crate::geometry::{ray::Ray, vector::Point3};
 
 /// Provides the data structure and implementation of the Core shapes
-pub mod core;
+pub mod sphere;
 
 /// Provides the data structure and implementation to import External shapes
 pub mod external;
 
-#[derive(Debug)]
-/// Data structure representing a Shape.
-pub struct Shape {}
+/// Trait representing a Shape.
+pub trait Shape<P>
+where
+    P: Num + Copy,
+{
+    /// Returns the 'id' of a Shape.
+    fn get_id(&self) -> i32;
+
+    /// Returns the 'name' of a Shape.
+    fn get_name<'a>(&'a self) -> &'a str;
+
+    /// Returns the origin coordinates (Point3) of a Shape.
+    fn get_origin(&self) -> Point3<P>;
+
+    /// Creates and returns a new shape.
+    fn new(id: i32) -> Self;
+
+    /// Returns a collection of 't' values ('xs') where the Ray intersects a Shape.
+    fn intersect(shape: impl Shape<P>, ray: Ray<P>) -> Vec<P>;
+}

@@ -30,16 +30,6 @@ pub struct Ray<P> {
     pub direction: Vector3<P>,
 }
 
-/// Type representing an Intersection between a Ray and a Shape
-/// For every shape we can have 0..n intersections
-#[derive(Debug)]
-pub struct Intersection {
-    /// .
-    pub shape: Shape,
-    /// .
-    pub t: f64,
-}
-
 impl<P> Display for Ray<P>
 where
     P: Num + Copy + Display,
@@ -50,40 +40,26 @@ where
     }
 }
 
-/// A trait that provides capabilities to initialize a Ray
-pub trait RayInit<P> {
+/// A trait that provides common operations for Rays
+pub trait Rays<P> {
     /// Creates and returns a new Ray with Origin (Point3)
     /// and Direction (Vector3).
     fn new(origin: Point3<P>, direction: Vector3<P>) -> Self;
+
+    /// Calculates a Position (Point3) based on a
+    /// Ray and a distance 't'.
+    fn position(ray: Ray<P>, t: P) -> Point3<P>;
 }
 
-impl<P> RayInit<P> for Ray<P>
+impl<P> Rays<P> for Ray<P>
 where
     P: Num + Copy,
 {
     fn new(origin: Point3<P>, direction: Vector3<P>) -> Self {
         Self { origin, direction }
     }
-}
 
-/// A trait that provides common operations for Rays
-pub trait RayOps<P> {
-    /// Calculates a Position (Point3) based on a
-    /// Ray and a distance 't'.
-    fn position(ray: Ray<P>, t: P) -> Point3<P>;
-}
-
-impl<P> RayOps<P> for Ray<P>
-where
-    P: Copy + Num,
-{
     fn position(ray: Ray<P>, t: P) -> Point3<P> {
         ray.origin + ray.direction * t
-    }
-}
-
-impl Intersection {
-    fn intersection(t: f64, shape: Shape) -> Self {
-        Self { shape, t }
     }
 }

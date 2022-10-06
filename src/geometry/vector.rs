@@ -67,6 +67,12 @@ where
 
     /// Initialize a Vector or Point with the Z coordinate axis with a user-defined value.
     fn z_coord(z_val: P) -> Self;
+
+    /// Initialize a Vector or Point with all the coordinates with a value of '1'.
+    fn one() -> Self;
+
+    /// Initialize a Vector or Point with all the coordinates with a value of '0'.
+    fn zero() -> Self;
 }
 
 /// Trait that provides Vector capabilities.
@@ -74,12 +80,6 @@ pub trait Vector<P>: Tuple<P>
 where
     P: Copy + Num,
 {
-    /// Initialize a Vector with all the coordinates with a value of '1'.
-    fn one() -> Self;
-
-    /// Initialize a Vector with all the coordinates with a value of '0'.
-    fn zero() -> Self;
-
     /// Initialize a Vector with the Z coordinate with a value of '-1'.
     fn back() -> Self
     where
@@ -189,6 +189,24 @@ where
             w: num::zero::<P>(),
         }
     }
+
+    fn one() -> Self {
+        Vector3 {
+            x: num::one(),
+            y: num::one(),
+            z: num::one(),
+            w: num::zero(),
+        }
+    }
+
+    fn zero() -> Self {
+        Vector3 {
+            x: num::zero(),
+            y: num::zero(),
+            z: num::zero(),
+            w: num::zero(),
+        }
+    }
 }
 
 // Implementation of the Tuple Supertrait for Point.
@@ -241,6 +259,24 @@ where
             w: num::one::<P>(),
         }
     }
+
+    fn one() -> Self {
+        Point3 {
+            x: num::one(),
+            y: num::one(),
+            z: num::one(),
+            w: num::one(),
+        }
+    }
+
+    fn zero() -> Self {
+        Point3 {
+            x: num::zero(),
+            y: num::zero(),
+            z: num::zero(),
+            w: num::one(),
+        }
+    }
 }
 
 // Implementation of the Point subtrait capabilities.
@@ -263,24 +299,6 @@ impl<P> Vector<P> for Vector3<P>
 where
     P: Copy + Num,
 {
-    fn one() -> Self {
-        Vector3 {
-            x: num::one(),
-            y: num::one(),
-            z: num::one(),
-            w: num::zero(),
-        }
-    }
-
-    fn zero() -> Self {
-        Vector3 {
-            x: num::zero(),
-            y: num::zero(),
-            z: num::zero(),
-            w: num::zero(),
-        }
-    }
-
     fn back() -> Self
     where
         P: Neg + Neg<Output = P>,
