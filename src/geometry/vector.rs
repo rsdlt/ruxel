@@ -475,7 +475,7 @@ where
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = format!(
-            "v: [{:^8.2},{:^8.2},{:^8.2},{:^8.2}]",
+            "p: [{:^8.2},{:^8.2},{:^8.2},{:^8.2}]",
             self.x, self.y, self.z, self.w
         );
         f.write_str(&s)

@@ -6,22 +6,18 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::f64::consts::PI;
-use std::path::Path;
-use std::usize;
-
-use crate::picture::canvas::{Canvas, Pixel};
-use crate::picture::colors::{ColorInit, ColorRgb};
+// Unit tests for Ray types.
 
 use super::*;
 use crate::shapes::core::Sphere;
 
-/// Unit tests for Ray types.
 #[test]
 fn ut_ray_initialization() {
-    let ray = Ray::new(Point3::y_coord(1.0), Vector3::down());
-    println!("{}", ray);
-    let ray = Ray::new(Point3::new(1, 2, 3), Vector3::new(1, 2, 3));
+    let origin = Point3::new(1, 2, 3);
+    let direction = Vector3::new(4, 5, 6);
+    let ray = Ray::new(origin, direction);
+    assert_eq!(ray.origin, origin);
+    assert_eq!(ray.direction, direction);
     println!("{}", ray);
 }
 
