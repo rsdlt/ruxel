@@ -73,7 +73,7 @@ where
 /// Finds and returns the 'hit' -visible intersection- in a collection.
 pub fn hit<P, S>(xs: IntxnVec<P, S>) -> Option<Intxn<P, S>>
 where
-    P: Num + NumCast + Copy + PartialEq + PartialOrd,
+    P: Num + NumCast + Copy + PartialEq + PartialOrd + Display,
     S: Shape<P> + Copy,
 {
     let mut min = xs[0].t;
@@ -98,7 +98,7 @@ where
 /// Common set of operations for Intersections
 pub trait Intersection<P, S>
 where
-    P: Num + Copy,
+    P: Num + Copy + Display,
     S: Shape<P> + Copy,
 {
     /// Returns an intersection with a 't' distance between a Ray and a Shape
@@ -107,7 +107,7 @@ where
 
 impl<P, S> Intersection<P, S> for Intxn<P, S>
 where
-    P: Num + Copy,
+    P: Num + Copy + Display,
     S: Shape<P> + Copy,
 {
     fn intersection(t: P, object: S) -> Self {

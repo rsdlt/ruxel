@@ -6,9 +6,12 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use crate::geometry::matrix::*;
 use crate::shapes::*;
 use num::{Num, NumCast};
 use std::fmt::Display;
+use std::ops::{Mul, Neg};
+
 /**
  Data structures and methods for Ray computations.
 */
@@ -49,11 +52,14 @@ pub trait Rays<P> {
     /// Calculates a Position (Point3) based on a
     /// Ray and a distance 't'.
     fn position(ray: Ray<P>, t: P) -> Point3<P>;
+
+    /// Transforms a Ray given a Transformation Matrix
+    fn transform(ray: Ray<P>, mat: Matrix4<P>) -> Ray<P>;
 }
 
 impl<P> Rays<P> for Ray<P>
 where
-    P: Num + Copy,
+    P: Num + NumCast + Copy + Display + Neg + Neg<Output = P>,
 {
     fn new(origin: Point3<P>, direction: Vector3<P>) -> Self {
         Self { origin, direction }
@@ -61,5 +67,12 @@ where
 
     fn position(ray: Ray<P>, t: P) -> Point3<P> {
         ray.origin + ray.direction * t
+    }
+
+    fn transform(ray: Ray<P>, mat: Matrix4<P>) -> Ray<P> {
+        Ray {
+            origin: mat * ray.origin,
+            direction: mat * ray.direction,
+        }
     }
 }
