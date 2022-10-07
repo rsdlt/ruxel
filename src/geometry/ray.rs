@@ -10,7 +10,7 @@ use crate::shapes::*;
 use num::{Num, NumCast};
 use std::fmt::Display;
 /**
- Data structures and methods for Ray and Intersection computations
+ Data structures and methods for Ray computations.
 */
 // Unit tests for Ray
 #[cfg(test)]

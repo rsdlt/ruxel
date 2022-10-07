@@ -13,6 +13,8 @@ use num::{Num, NumCast};
 
 use crate::geometry::{ray::Ray, vector::Point3};
 
+use crate::geometry::intersection::{Intersection, Intxn, IntxnVec};
+
 /// Provides the data structure and implementation of the Core shapes
 pub mod sphere;
 
@@ -37,5 +39,7 @@ where
     fn new(id: i32) -> Self;
 
     /// Returns a collection of 't' values ('xs') where the Ray intersects a Shape.
-    fn intersect(shape: impl Shape<P>, ray: Ray<P>) -> Vec<P>;
+    fn intersect<S>(shape: S, ray: Ray<P>) -> IntxnVec<P, S>
+    where
+        S: Shape<P> + Copy;
 }

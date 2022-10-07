@@ -18,8 +18,8 @@ fn ut_sphere_ray_intersect_2p() {
     let s = Sphere::new(1);
     let xs = Sphere::intersect(s, r);
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], 4.0);
-    assert_eq!(xs[1], 6.0);
+    assert_eq!(xs[0].t, 4.0);
+    assert_eq!(xs[1].t, 6.0);
 }
 
 #[test]
@@ -29,8 +29,8 @@ fn ut_sphere_ray_intersect_tangent() {
     let s = Sphere::new(2);
     let xs = Sphere::intersect(s, r);
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], 5.0);
-    assert_eq!(xs[1], 5.0);
+    assert_eq!(xs[0].t, 5.0);
+    assert_eq!(xs[1].t, 5.0);
 }
 
 #[test]
@@ -49,8 +49,8 @@ fn ut_ray_inside_sphere() {
     let s = Sphere::new(4);
     let xs = Sphere::intersect(s, r);
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], -1.0);
-    assert_eq!(xs[1], 1.0);
+    assert_eq!(xs[0].t, -1.0);
+    assert_eq!(xs[1].t, 1.0);
 }
 
 #[test]
@@ -60,6 +60,17 @@ fn ut_ray_behind_sphere() {
     let s = Sphere::new(5);
     let xs = Sphere::intersect(s, r);
     assert_eq!(xs.len(), 2);
-    assert_eq!(xs[0], -6.0);
-    assert_eq!(xs[1], -4.0);
+    assert_eq!(xs[0].t, -6.0);
+    assert_eq!(xs[1].t, -4.0);
+}
+
+#[test]
+// Intersect sets object
+fn ut_instersect_obect() {
+    let r = Ray::new(Point3::z_coord(-5.0), Vector3::z_coord(1.0));
+    let s = Sphere::new(5);
+    let xs = Sphere::intersect(s, r);
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0].object.get_name(), s.get_name());
+    assert_eq!(xs[1].object.get_id(), s.get_id());
 }

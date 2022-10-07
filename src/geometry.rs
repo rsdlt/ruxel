@@ -22,5 +22,8 @@ pub mod matrix;
 /// Data structures and methods for Vector3 and Point3 computations.
 pub mod vector;
 
-/// Data structures and methdos for Ray computations
+/// Data structures and methods for Ray computations.
 pub mod ray;
+
+/// Data structures and methods for Intersections computations.
+pub mod intersection;
