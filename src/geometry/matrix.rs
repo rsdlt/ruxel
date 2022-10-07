@@ -246,6 +246,9 @@ pub trait Matrix4Ops<P> {
 
     /// Returns a new matrix filled with '0'.
     fn zero() -> Self;
+
+    /// Returns a new matrix in f64 format.
+    fn mat_to_f64(self) -> Matrix4<f64>;
 }
 
 impl<P> Matrix4Ops<P> for Matrix4<P>
@@ -463,6 +466,16 @@ where
         Self {
             m: [[num::zero(); 4]; 4],
         }
+    }
+
+    fn mat_to_f64(self) -> Matrix4<f64> {
+        let mut m_res = Matrix4::zero();
+        for row in 0..4 {
+            for col in 0..4 {
+                m_res.m[row][col] = self.m[row][col].to_f64().unwrap();
+            }
+        }
+        m_res
     }
 }
 

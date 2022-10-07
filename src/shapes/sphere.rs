@@ -32,10 +32,15 @@ mod tests;
 /// Representation of a 3D sphere
 #[derive(Clone, Copy, Debug)]
 pub struct Sphere<'a, P> {
+    /// id of the Sphere.
     pub id: i32,
+    /// Name of the Spher.
     pub name: &'a str,
+    /// Origin or 'center' of the Sphere.
     pub origin: Point3<P>,
+    /// Radius of the Sphere.
     pub radius: P,
+    /// Transformation matrix of the Sphere.
     pub transform: Matrix4<P>,
 }
 
@@ -64,27 +69,23 @@ where
         S: Shape<P> + Copy,
         P: Display,
     {
-        let ray = Ray::transform(ray, shape.get_transform().inverse());
-
-        // TODO: make it work with integer
+        let ray = Ray::transform(
+            ray.ray_to_f64(),
+            shape.get_transform().mat_to_f64().inverse(),
+        );
 
         let sphere_to_ray = ray.origin - Point3::zero();
         let a = Vector3::dot(ray.direction, ray.direction);
-        let b = P::from(2).unwrap() * Vector3::dot(ray.direction, sphere_to_ray);
-        let c = Vector3::dot(sphere_to_ray, sphere_to_ray) - num::one();
+        let b = 2.0 * Vector3::dot(ray.direction, sphere_to_ray);
+        let c = Vector3::dot(sphere_to_ray, sphere_to_ray) - 1.0;
 
-        let discriminant = b * b - (P::from(4).unwrap() * a * c);
-
-        ////////////
-        println!("a: {}\nb:{}\nc:{}", a, b, c);
+        let discriminant: f64 = b * b - (4.0 * a * c);
 
         if discriminant < num::zero() {
             return vec![];
         } else {
-            let t1 = (-b - P::from(discriminant.to_f64().unwrap().sqrt()).unwrap())
-                / (P::from(2).unwrap() * a);
-            let t2 = (-b + P::from(discriminant.to_f64().unwrap().sqrt()).unwrap())
-                / (P::from(2).unwrap() * a);
+            let t1 = P::from((-b - discriminant.sqrt()) / (2.0 * a)).unwrap();
+            let t2 = P::from((-b + discriminant.sqrt()) / (2.0 * a)).unwrap();
 
             let i1 = Intxn::intersection(t1, shape);
             let i2 = Intxn::intersection(t2, shape);
@@ -107,34 +108,3 @@ where
         self.transform = mat;
     }
 }
-
-// fn intersect<S>(shape: S, ray: Ray<P>) -> IntxnVec<P, S>
-// where
-//     S: Shape<P> + Copy,
-//     P: Display,
-// {
-//     let r2 = Ray::transform(ray, Matrix4::inverse(shape.get_transform()));
-//
-//     let sphere_to_ray = ray.origin - shape.get_origin();
-//     let a = Vector3::dot(ray.direction, ray.direction);
-//     let b = P::from(2).unwrap() * Vector3::dot(ray.direction, sphere_to_ray);
-//     let c = Vector3::dot(sphere_to_ray, sphere_to_ray) - num::one();
-//
-//     let discriminant = b * b - (P::from(4).unwrap() * a * c);
-//
-//     if discriminant < num::zero() {
-//         return vec![];
-//     } else {
-//         let t1 = (-b - P::from(discriminant.to_f64().unwrap().sqrt()).unwrap())
-//             / (P::from(2).unwrap() * a);
-//         let t2 = (-b + P::from(discriminant.to_f64().unwrap().sqrt()).unwrap())
-//             / (P::from(2).unwrap() * a);
-//         // xs.push(t1);
-//         // xs.push(t2);
-//         // return xs;
-//         let i1 = Intxn::intersection(t1, shape);
-//         let i2 = Intxn::intersection(t2, shape);
-//         let xs = intersections![i1, i2];
-//         return xs;
-//     }
-// }

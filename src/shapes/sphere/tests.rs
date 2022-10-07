@@ -107,6 +107,18 @@ fn ut_sphere_intersect_scaled() {
 }
 
 #[test]
+// Scaled sphere intersecting with a Ray
+fn ut_sphere_intersect_scaled_int() {
+    let r = Ray::new(Point3::new(0, 0, -5), Vector3::new(0, 0, 1));
+    let mut s = Sphere::new(1);
+    s.set_transform(Matrix4::identity().scale(2, 2, 2));
+    let xs = Sphere::intersect(s, r);
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0].t, 3);
+    assert_eq!(xs[1].t, 7);
+}
+
+#[test]
 // Translated sphere intersecting with a Ray
 fn ut_sphere_intersect_translated() {
     let r = Ray::new(Point3::z_coord(-5), Vector3::forward());

@@ -55,6 +55,9 @@ pub trait Rays<P> {
 
     /// Transforms a Ray given a Transformation Matrix
     fn transform(ray: Ray<P>, mat: Matrix4<P>) -> Ray<P>;
+
+    /// Returns a Ray<64>.
+    fn ray_to_f64(self) -> Ray<f64>;
 }
 
 impl<P> Rays<P> for Ray<P>
@@ -73,6 +76,13 @@ where
         Ray {
             origin: mat * ray.origin,
             direction: mat * ray.direction,
+        }
+    }
+
+    fn ray_to_f64(self) -> Ray<f64> {
+        Ray {
+            origin: self.origin.p_to_f64(),
+            direction: self.direction.v_to_f64(),
         }
     }
 }

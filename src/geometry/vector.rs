@@ -129,6 +129,9 @@ where
 
     /// Calculate the Dot product between two Vectors.
     fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P;
+
+    /// Returns a Vector of type f64.
+    fn v_to_f64(self) -> Vector3<f64>;
 }
 
 /// Trait that provides Point capabilities.
@@ -138,6 +141,9 @@ where
 {
     /// Set a Point with all its coordinates with a value of '0'.
     fn origin(&mut self) -> Self;
+
+    /// Returns a Point of type f64.
+    fn p_to_f64(self) -> Point3<f64>;
 }
 
 // Implementation of the Tuple Supertrait for Vector.
@@ -214,21 +220,21 @@ impl<P> Tuple<P> for Point3<P>
 where
     P: Copy + Num,
 {
-    fn new(x: P, y: P, z: P) -> Self {
-        Point3 {
-            x,
-            y,
-            z,
-            w: num::one(),
-        }
-    }
-
     fn all(all: P) -> Self {
         Point3 {
             x: num::one::<P>() * all,
             y: num::one::<P>() * all,
             z: num::one::<P>() * all,
             w: num::one::<P>(),
+        }
+    }
+
+    fn new(x: P, y: P, z: P) -> Self {
+        Point3 {
+            x,
+            y,
+            z,
+            w: num::one(),
         }
     }
 
@@ -282,7 +288,7 @@ where
 // Implementation of the Point subtrait capabilities.
 impl<P> Point<P> for Point3<P>
 where
-    P: Copy + Num,
+    P: Copy + Num + NumCast,
 {
     fn origin(&mut self) -> Self {
         Point3 {
@@ -292,12 +298,21 @@ where
             w: num::one(),
         }
     }
+
+    fn p_to_f64(self) -> Point3<f64> {
+        Point3 {
+            x: self.x.to_f64().unwrap(),
+            y: self.y.to_f64().unwrap(),
+            z: self.z.to_f64().unwrap(),
+            w: self.w.to_f64().unwrap(),
+        }
+    }
 }
 
 // Implemenation of the Vector subtrait capabilitites.
 impl<P> Vector<P> for Vector3<P>
 where
-    P: Copy + Num,
+    P: Copy + Num + NumCast,
 {
     fn back() -> Self
     where
@@ -425,6 +440,15 @@ where
 
     fn dot(lhs: Vector3<P>, rhs: Vector3<P>) -> P {
         lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
+    }
+
+    fn v_to_f64(self) -> Vector3<f64> {
+        Vector3 {
+            x: self.x.to_f64().unwrap(),
+            y: self.y.to_f64().unwrap(),
+            z: self.z.to_f64().unwrap(),
+            w: self.w.to_f64().unwrap(),
+        }
     }
 }
 
