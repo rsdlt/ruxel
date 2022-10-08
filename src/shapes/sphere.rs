@@ -38,8 +38,6 @@ pub struct Sphere<'a, P> {
     pub name: &'a str,
     /// Origin or 'center' of the Sphere.
     pub origin: Point3<P>,
-    /// Radius of the Sphere.
-    pub radius: P,
     /// Transformation matrix of the Sphere.
     pub transform: Matrix4<P>,
 }
@@ -99,7 +97,6 @@ where
             name: "sphere",
             id,
             origin: Point3::zero(),
-            radius: num::one(),
             transform: Matrix4::identity(),
         }
     }
